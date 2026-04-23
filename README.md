@@ -7,7 +7,7 @@ Primer cuatrimestre 2026 - Comisión Lunes - 01-1900
 | Integrante | GitHub |
 |------------|--------|
 | Mendoza, Micaela | mmendoza189unlam |
-| Vega Villalba, Nombre | arielvegav13 |
+| Vega Villalba, Ariel | arielvegav13 |
 | Aguirre, Camila | Cami-2901 |
 
 ## Descripción
