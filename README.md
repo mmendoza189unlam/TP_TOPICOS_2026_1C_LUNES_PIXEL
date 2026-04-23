@@ -1,6 +1,6 @@
 # TP_TOPICOS_2026_1C_LUNES_PIXEL
 Trabajo Práctico - Tópicos de Programación
-Primer cuatrimestre 2026 - Comisión Lunes
+Primer cuatrimestre 2026 - Comisión Lunes - 01-1900
 
 ## Grupo: PIXEL
 
