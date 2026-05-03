@@ -1,0 +1,38 @@
+# depslib dependency file v1.0
+1777143240 source:c:\users\vega_\onedrive\documents\unlam\topicos_programacion\2026\tp\tetris\dibujos.c
+	"dibujos.h"
+
+1777844731 c:\users\vega_\onedrive\documents\unlam\topicos_programacion\2026\tp\tetris\dibujos.h
+	<stdint.h>
+	<GBT/gbt.h>
+
+1777140646 c:\users\vega_\onedrive\documents\unlam\topicos_programacion\2026\tp\tetris\lib\gbt_v2026.1c.01\include\gbt\gbt.h
+	"gbt_entrada.h"
+	"gbt_graficos.h"
+	"gbt_logger.h"
+	"gbt_temporizador.h"
+	"gbt_vector.h"
+
+1777140646 c:\users\vega_\onedrive\documents\unlam\topicos_programacion\2026\tp\tetris\lib\gbt_v2026.1c.01\include\gbt\gbt_entrada.h
+	<stdint.h>
+
+1777140646 c:\users\vega_\onedrive\documents\unlam\topicos_programacion\2026\tp\tetris\lib\gbt_v2026.1c.01\include\gbt\gbt_graficos.h
+	<stdint.h>
+
+1777140646 c:\users\vega_\onedrive\documents\unlam\topicos_programacion\2026\tp\tetris\lib\gbt_v2026.1c.01\include\gbt\gbt_logger.h
+
+1777140646 c:\users\vega_\onedrive\documents\unlam\topicos_programacion\2026\tp\tetris\lib\gbt_v2026.1c.01\include\gbt\gbt_temporizador.h
+	<stdint.h>
+
+1777140646 c:\users\vega_\onedrive\documents\unlam\topicos_programacion\2026\tp\tetris\lib\gbt_v2026.1c.01\include\gbt\gbt_vector.h
+	<stdlib.h>
+	<stdint.h>
+
+1777145527 source:c:\users\vega_\onedrive\documents\unlam\topicos_programacion\2026\tp\tetris\main.c
+	<stdio.h>
+	<stdlib.h>
+	<time.h>
+	<stdint.h>
+	"dibujos.h"
+	"GBT/gbt.h"
+
