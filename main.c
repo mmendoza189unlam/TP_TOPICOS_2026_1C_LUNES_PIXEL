@@ -128,8 +128,16 @@ void render(){
 
 int main(){
     srand(time(0));
-    gbt_iniciar();
-    gbt_crear_ventana("Tetris",ANCHO_VENTANA,ALTO_VENTANA,ESCALA_VENTANA);
+    //Le agregue aca la "verificacion" de q se haya ejecutado bien, tanto al iniciar como cuando abre la ventana
+    if (gbt_iniciar() != 0) {
+        fprintf(stderr, "Error al iniciar GBT: %s\n", gbt_obtener_log());
+        return -1;
+    }
+
+    if (gbt_crear_ventana("Tetris",ANCHO_VENTANA,ALTO_VENTANA,ESCALA_VENTANA) != 0) {
+        fprintf(stderr, "Error al iniciar el modulo de graficos de GBT: %s\n", gbt_obtener_log());
+        return -1;
+    }
 
     mezclar_bag();
     nueva();
@@ -175,6 +183,10 @@ if(t == GBTK_w){
         gbt_volcar_backbuffer();
         gbt_esperar(16);
     }
+
+    //Aqui, no estoy muy segura de esto, pero le agregue lo de limpieza de memoria
+    gbt_temporizador_destruir(timer);
+    gbt_destruir_ventana();
 
     gbt_cerrar();
     return 0;
