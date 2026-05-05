@@ -126,6 +126,19 @@ void render(){
             }
 }
 
+//Aceleracion
+void actualizar_dificultad(tGBT_Temporizador** timer, int* cont, float* intervalo) {
+    (*cont)++;
+    if ((*cont) % 10 == 0) { //Cada 10 fichas
+        (*intervalo) *= 0.97f;
+
+        gbt_temporizador_destruir(*timer);
+        *timer = gbt_temporizador_crear((*intervalo) / 1000.0f);
+
+        printf("Dificultad aumentada! Nuevo intervalo: %.2f s\n", (*intervalo) / 1000.0f); //Te avisa del nuevo intervalo
+    }
+}
+
 int main(){
     srand(time(0));
     //Le agregue aca la "verificacion" de q se haya ejecutado bien, tanto al iniciar como cuando abre la ventana
@@ -143,6 +156,10 @@ int main(){
     nueva();
 
     tGBT_Temporizador* timer=gbt_temporizador_crear(0.5);
+
+    //variables
+    int contador_fichas = 0; // Cant de piezas q se han fijado
+    float intervalo_actual = 1000;
 
     while(1){
         gbt_procesar_entrada();
@@ -175,6 +192,7 @@ if(t == GBTK_w){
                 posY--;
                 fijar();
                 limpiar();
+                actualizar_dificultad(&timer,&contador_fichas,&intervalo_actual);
                 nueva();
             }
         }
