@@ -48,6 +48,9 @@ int puntaje = 0;
 int pieza_actual, posX, posY;
 int siguiente;
 int bag[7], bag_index=0;
+//variables --> aceleracion
+int contador_fichas = 0;       // Cant de piezas q se han fijado
+float intervalo_actual = 1000; //Lo pongo aca por si queres en un futuro agregar uno q muestre la velocidad al usuario
 
 void mezclar_bag(){
     for(int i=0;i<7;i++) bag[i]=i;
@@ -96,22 +99,38 @@ void fijar(){
                 tablero[posY+i][posX+j]=pieza_actual+1;
 }
 
-void limpiar(){
+void limpiar(int nivel){
     int filas = 0;
     for(int y=0;y<ALTO_TABLERO;y++){
         int llena=1;
         for(int x=0;x<ANCHO_TABLERO;x++)
             if(!tablero[y][x]) llena=0;
+
         if(llena){
-            for(int yy=y;yy>0;yy--)
+            for(int yy=y;yy>0;yy--){
                 for(int x=0;x<ANCHO_TABLERO;x++)
+                {
                     tablero[yy][x]=tablero[yy-1][x];
+                }
+
+            }
+
             y--;
             filas++;
         }
     }
+
     int tabla[] = {0, 100, 300, 500, 800};
-    if(filas > 0) puntaje += tabla[filas];
+
+    if(filas > 0){
+        int multiplicador=(nivel+1);
+        int bono_velocidad=(nivel)*5; //para aumentar el puntaje segun el nivel
+        int ptos_obtenidos=(tabla[filas]*multiplicador)+bono_velocidad;
+        puntaje += ptos_obtenidos;
+
+        //Para visualizar los cambios
+        printf("[FILAS] Borradas: %d | Multiplicador Nivel: x%d | Bono: +%d | Puntos: +%d\n",filas, multiplicador, bono_velocidad, ptos_obtenidos);
+    }
 }
 
 
@@ -134,11 +153,12 @@ void render(){
     gbt_borrar_backbuffer(0);
 
     // Tablero y pieza actual (igual que antes)
+    //Tablero
     for(int y=FILAS_OCULTAS;y<ALTO_TABLERO;y++)
         for(int x=0;x<ANCHO_TABLERO;x++)
             if(tablero[y][x])
                 dibujar(bloque[tablero[y][x]-1],x,y-FILAS_OCULTAS);
-
+    //Pieza Actual
     for(int i=0;i<4;i++)
         for(int j=0;j<4;j++)
             if(piezas[pieza_actual][i][j]){
@@ -146,6 +166,8 @@ void render(){
                 if(dy>=0)
                     dibujar(bloque[pieza_actual],posX+j,dy);
             }
+
+//--PANEL DERECHO--
 
 // Dibujar "SCORE"
     for(int k = 0; k < 5; k++)
@@ -172,8 +194,20 @@ void render(){
     for(int i=0;i<4;i++)
     for(int j=0;j<4;j++)
         if(piezas_orig[siguiente][i][j]){
+
+//Dibujar "LEVEL"
+    for(int k = 0; k < 5; k++)
+        for(int ly = 0; ly < 5; ly++)
+            for(int lx = 0; lx < 3; lx++)
+                if(letras_level[k][ly][lx])
+                    gbt_dibujar_pixel(84 + k*(ANCHO_DIGITO+1) + lx, 100 + ly, V);
+
+//Dibujar el numero de level
+    int level = contador_fichas / 10;
+    dibujar_numero_ceros(level, 84, 108, V);
+
 // posición fija en panel derecho
-        dibujar(bloque[siguiente], 11 + j, 6 + i);
+    dibujar(bloque[siguiente], 11 + j, 6 + i);
         }
     int baseX = 0;
     int baseY = 0;
@@ -182,16 +216,16 @@ void render(){
     int alto_px  = ALTO_VISIBLE * PIXELES_X_LADO;
 
 // Línea superior e inferior
-for(int x = 0; x < ancho_px; x++){
-    gbt_dibujar_pixel(baseX + x, baseY, V); // arriba
-    gbt_dibujar_pixel(baseX + x, baseY + alto_px - 1, V); // abajo
-}
+    for(int x = 0; x < ancho_px; x++){
+        gbt_dibujar_pixel(baseX + x, baseY, V); // arriba
+        gbt_dibujar_pixel(baseX + x, baseY + alto_px - 1, V); // abajo
+    }
 
 // Línea izquierda y derecha
-for(int y = 0; y < alto_px; y++){
-    gbt_dibujar_pixel(baseX, baseY + y, V); // izquierda
-    gbt_dibujar_pixel(baseX + ancho_px - 1, baseY + y, V); // derecha
-}
+    for(int y = 0; y < alto_px; y++){
+        gbt_dibujar_pixel(baseX, baseY + y, V); // izquierda
+        gbt_dibujar_pixel(baseX + ancho_px - 1, baseY + y, V); // derecha
+    }
 }
 
 //Aceleracion
@@ -229,11 +263,13 @@ int main(){
     tGBT_Temporizador* timer = gbt_temporizador_crear(0.5);
     int delay_mov = 0;
 
-    //variables --> aceleracion
-    int contador_fichas = 0;       // Cant de piezas q se han fijado
-    float intervalo_actual = 1000;
+
     while(!game_over){
         gbt_procesar_entrada();
+
+        //variable --> limpiar, es para a mayor velocidad, mayor los puntos obtenidos
+        int nivel= contador_fichas/10;
+
         // IZQUIERDA
         if(gbt_tecla_presionada(GBTK_IZQUIERDA)){
             posX--;
@@ -250,7 +286,11 @@ int main(){
             if(colisiona(piezas[pieza_actual], posX, posY)){
                 posY--;
             } else {
-                puntaje += 1;
+                int ptos_bajar= 1+(nivel*5);
+                puntaje += ptos_bajar; //Para el aumento de puntaje segun el nivel
+
+                //Para visualizar los cambios
+                printf("[SOFT DROP] Puntos: +%d | Total: %d\n", ptos_bajar, puntaje);
             }
         }
         // ROTAR
@@ -259,27 +299,42 @@ int main(){
         }
         // HARD DROP (ESPACIO)
         if(gbt_tecla_presionada(GBTK_ESPACIO)){
+            int celdas_caidas=0;
             while(!colisiona(piezas[pieza_actual], posX, posY)){
                 posY++;
-                puntaje += 2;
+                celdas_caidas++;
             }
+            int ptos_drop=celdas_caidas*(2+nivel);
+            puntaje += ptos_drop; //Para el aumento de puntaje segun el nivel
             posY--;
+
+            //Para visualizar el cambio
+            printf("[HARD DROP] Celdas: %d | Puntos: +%d\n", celdas_caidas, ptos_drop);
+
             fijar();
-            limpiar();
+            limpiar(nivel); //modifico para el aumento segun el nivel
+
+            //Agregué esto para que las piezas de espacio también sumen al contador
             actualizar_dificultad(&timer, &contador_fichas, &intervalo_actual);
+
             nueva();
         }
         // SALIR
         if(gbt_tecla_presionada(GBTK_ESCAPE)){
             break;
         }
+
         if(gbt_temporizador_consumir(timer)){
             posY++;
             if(colisiona(piezas[pieza_actual],posX,posY)){
                 posY--;
                 fijar();
-                limpiar();
+                limpiar(nivel); //modifico para el aumento segun el nivel
                 actualizar_dificultad(&timer,&contador_fichas,&intervalo_actual);
+
+                //Para visualizar el cambio
+                printf("[PIEZA FIJADA] Total piezas: %d | Nivel actual: %d | Velocidad: %.2f ms\n",contador_fichas, nivel, intervalo_actual);
+
                 nueva();
             }
         }

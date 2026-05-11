@@ -30,6 +30,14 @@ const uint8_t letras_next[4][5][3] = {
     {{1,1,1},{0,1,0},{0,1,0},{0,1,0},{0,1,0}}, // T
 };
 
+const uint8_t letras_level[5][5][3] = {
+    {{1,0,0},{1,0,0},{1,0,0},{1,0,0},{1,1,1}}, // L
+    {{1,1,1},{1,0,0},{1,1,1},{1,0,0},{1,1,1}}, // E
+    {{1,0,1},{1,0,1},{1,0,1},{1,0,1},{0,1,0}}, // V
+    {{1,1,1},{1,0,0},{1,1,1},{1,0,0},{1,1,1}}, // E
+    {{1,0,0},{1,0,0},{1,0,0},{1,0,0},{1,1,1}}, // L
+};
+
 void dibujar(const uint8_t sprite[][PIXELES_X_LADO], uint16_t oX, uint16_t oY)
 {
     int baseX = oX * (PIXELES_X_LADO + PX_PADDING);
@@ -52,6 +60,21 @@ void dibujar_numero(int numero, uint16_t px, uint16_t py, uint8_t color) {
     char buf[16];
     sprintf(buf, "%d", numero);
     int len = strlen(buf);
+    for (int k = 0; k < len; k++) {
+        int d = buf[k] - '0';
+        for (int y = 0; y < ALTO_DIGITO; y++)
+            for (int x = 0; x < ANCHO_DIGITO; x++)
+                if (digitos[d][y][x])
+                    gbt_dibujar_pixel(px + k*(ANCHO_DIGITO+1) + x, py + y, color);
+    }
+}
+
+void dibujar_numero_ceros(int numero, uint16_t px, uint16_t py, uint8_t color) {
+    char buf[16];
+    // El %07d le dice a C: "imprime un entero de 7 espacios y rellena con ceros"
+    sprintf(buf, "%07d", numero);
+    int len = strlen(buf);
+
     for (int k = 0; k < len; k++) {
         int d = buf[k] - '0';
         for (int y = 0; y < ALTO_DIGITO; y++)
