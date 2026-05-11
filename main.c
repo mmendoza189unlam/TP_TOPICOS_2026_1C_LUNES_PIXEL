@@ -17,6 +17,8 @@
 
 #define CANT_PIEZAS 7
 
+#define TIEMPO_GRACIA 1.0 //Para la fijacion, puse 1.0 para q sea literalmente  el 50% de la velocidad
+
 uint8_t tablero[ALTO_TABLERO][ANCHO_TABLERO] = {0};
 
 /// BLOQUES VISUALES
@@ -48,9 +50,14 @@ int puntaje = 0;
 int pieza_actual, posX, posY;
 int siguiente;
 int bag[7], bag_index=0;
-//variables --> aceleracion
+
+//variables globales --> aceleracion
 int contador_fichas = 0;       // Cant de piezas q se han fijado
 float intervalo_actual = 1000; //Lo pongo aca por si queres en un futuro agregar uno q muestre la velocidad al usuario
+
+//variables globales --> fijacion
+tGBT_Temporizador* timer_fijacion = NULL;
+int en_espera_fijacion = 0;
 
 void mezclar_bag(){
     for(int i=0;i<7;i++) bag[i]=i;
@@ -77,19 +84,35 @@ int colisiona(uint8_t p[4][4], int x, int y){
     return 0;
 }
 
-void rotar(uint8_t out[4][4], uint8_t in[4][4]){
+//Modifique lo de ROTAR para q se pueda hacer tanto de izq como derecha
+void rotarDerecha(uint8_t out[4][4], uint8_t in[4][4]){
     for(int i=0;i<4;i++)
         for(int j=0;j<4;j++)
             out[j][3-i]=in[i][j];
 }
+//Agregue esta para q se pueda hacer de izq
+void rotarIzq(uint8_t out[4][4], uint8_t in[4][4]){
+    for(int i=0;i<4;i++)
+        for(int j=0;j<4;j++)
+            out[3-j][i]=in[i][j];
+}
 
-void intentar_rotar(){
+//Tambien modifique aca, porque antes devolvia un void. Lo hice porque necesito para evitar un bug para la fijacion
+int intentar_rotar(int haciaDerecha){
     uint8_t tmp[4][4];
-    rotar(tmp, piezas[pieza_actual]);
-    if(!colisiona(tmp,posX,posY))
-        for(int i=0;i<4;i++)
-            for(int j=0;j<4;j++)
-                piezas[pieza_actual][i][j]=tmp[i][j];
+    //Es una band q si quiero q rote a la derecha es 1, pero si se quiere rotar a la derecha es 0
+    if(haciaDerecha){
+        rotarDerecha(tmp, piezas[pieza_actual]);
+    } else{
+        rotarIzq(tmp, piezas[pieza_actual]);
+    }
+
+    if(!colisiona(tmp,posX,posY)){
+        memcpy(piezas[pieza_actual], tmp, sizeof(tmp)); //Aplico la rotacion a la pieza
+        return 1; //Exito para la rotacion, es para evitar un bug q se me genero con la fijacion al rotar
+    }
+    return 0; //Fallo
+
 }
 
 void fijar(){
@@ -177,11 +200,10 @@ void render(){
                 gbt_dibujar_pixel(84 + k*(ANCHO_DIGITO+1) + lx, 2 + ly, A);  // 2 + ly
 
 // Puntaje debajo del texto (solo una vez)
-    dibujar_numero(puntaje, 84, 10, A);
-
 // Panel de puntaje (a la derecha, desde x=82)
 // Etiqueta "SC" en píxeles (simplificado, podés expandirlo)
-    dibujar_numero(puntaje, 84, 10, A); // color amarillo
+    dibujar_numero(puntaje, 84, 10, A);// color amarillo
+//Aqui modifique porque estaba repetido
 
 // Dibujar "NEXT"
     for(int k = 0; k < 4; k++)
@@ -192,8 +214,11 @@ void render(){
 
 // Dibujar preview de siguiente pieza
     for(int i=0;i<4;i++)
-    for(int j=0;j<4;j++)
-        if(piezas_orig[siguiente][i][j]){
+        for(int j=0;j<4;j++)
+            if(piezas_orig[siguiente][i][j]){
+                // posición fija en panel derecho
+                dibujar(bloque[siguiente], 11 + j, 6 + i);
+            }
 
 //Dibujar "LEVEL"
     for(int k = 0; k < 5; k++)
@@ -206,9 +231,6 @@ void render(){
     int level = contador_fichas / 10;
     dibujar_numero_ceros(level, 84, 108, V);
 
-// posición fija en panel derecho
-    dibujar(bloque[siguiente], 11 + j, 6 + i);
-        }
     int baseX = 0;
     int baseY = 0;
 
@@ -260,27 +282,53 @@ int main(){
     mezclar_bag();
     siguiente = siguiente_pieza(); // preload
     nueva();
-    tGBT_Temporizador* timer = gbt_temporizador_crear(0.5);
+    tGBT_Temporizador* timer = gbt_temporizador_crear(0.5); //Timer de gravedad
+    timer_fijacion = NULL; // Empezamos sin timer de fijación
     int delay_mov = 0;
 
 
     while(!game_over){
-        gbt_procesar_entrada();
 
+        //INPUTS
+        gbt_procesar_entrada();
         //variable --> limpiar, es para a mayor velocidad, mayor los puntos obtenidos
         int nivel= contador_fichas/10;
 
         // IZQUIERDA
         if(gbt_tecla_presionada(GBTK_IZQUIERDA)){
             posX--;
-            if(colisiona(piezas[pieza_actual], posX, posY)) posX++;
+            if(colisiona(piezas[pieza_actual], posX, posY)){
+               posX++;
+            }else {
+                // RESET DE TOLERANCIA (fijacion)
+                if(en_espera_fijacion) {
+                    en_espera_fijacion = 0;
+                    if(timer_fijacion) {
+                        gbt_temporizador_destruir(timer_fijacion);
+                        timer_fijacion = NULL;
+                    }
+                }
+            }
         }
+
         // DERECHA
         if(gbt_tecla_presionada(GBTK_DERECHA)){
             posX++;
-            if(colisiona(piezas[pieza_actual], posX, posY)) posX--;
+            if(colisiona(piezas[pieza_actual], posX, posY)){
+                posX--;
+            }else {
+                // RESET DE TOLERANCIA
+                if(en_espera_fijacion) {
+                    en_espera_fijacion = 0;
+                    if(timer_fijacion) {
+                        gbt_temporizador_destruir(timer_fijacion);
+                        timer_fijacion = NULL;
+                    }
+                }
+            }
         }
-        // ABAJO (1 paso por toque)
+
+        // ABAJO (1 paso por toque) - Soft Drop
         if(gbt_tecla_presionada(GBTK_ABAJO)){
             posY++;
             if(colisiona(piezas[pieza_actual], posX, posY)){
@@ -288,15 +336,47 @@ int main(){
             } else {
                 int ptos_bajar= 1+(nivel*5);
                 puntaje += ptos_bajar; //Para el aumento de puntaje segun el nivel
+                // Si baja con éxito, reseteamos la espera
+                if(en_espera_fijacion) {
+                    en_espera_fijacion = 0;
+                    if(timer_fijacion) {
+                        gbt_temporizador_destruir(timer_fijacion);
+                        timer_fijacion = NULL;
+                    }
+                }
 
                 //Para visualizar los cambios
                 printf("[SOFT DROP] Puntos: +%d | Total: %d\n", ptos_bajar, puntaje);
             }
         }
+
         // ROTAR
+        //Lo modifique para q se pueda rotar en ambos sentidos (izq y derecha)
+        //ROTAR DERECHA
         if(gbt_tecla_presionada(GBTK_ARRIBA)){
-            intentar_rotar();
+            if(intentar_rotar(1)){
+                //Le agrego el RESET de la fijacion
+                en_espera_fijacion = 0;
+                if(timer_fijacion) {
+                    gbt_temporizador_destruir(timer_fijacion);
+                    timer_fijacion = NULL;
+                }
+            }
         }
+
+        //ROTAR IZQUIERDA
+        if (gbt_tecla_presionada(GBTK_z)){ //Puse que se pueda modificar para la izquierda con la tecla Z, pero va  a ser mejor q sea con otra tecla
+            if (intentar_rotar(0)){
+                //Le agrego el RESET de la fijacion
+                en_espera_fijacion = 0;
+                if(timer_fijacion) {
+                    gbt_temporizador_destruir(timer_fijacion);
+                    timer_fijacion = NULL;
+                }
+            }
+        }
+
+
         // HARD DROP (ESPACIO)
         if(gbt_tecla_presionada(GBTK_ESPACIO)){
             int celdas_caidas=0;
@@ -318,24 +398,49 @@ int main(){
             actualizar_dificultad(&timer, &contador_fichas, &intervalo_actual);
 
             nueva();
+
+            //Cancelo cualquier espera de fijacion
+            en_espera_fijacion = 0;
+            if(timer_fijacion) { gbt_temporizador_destruir(timer_fijacion); timer_fijacion = NULL; }
         }
+
         // SALIR
         if(gbt_tecla_presionada(GBTK_ESCAPE)){
             break;
         }
 
+        //GRAVEDAD Y FIJACION
+
+        // LÓGICA DE CAÍDA Y TOLERANCIA
         if(gbt_temporizador_consumir(timer)){
-            posY++;
-            if(colisiona(piezas[pieza_actual],posX,posY)){
-                posY--;
+            if(!colisiona(piezas[pieza_actual], posX, posY + 1)){
+                posY++;
+                // Si la pieza bajó, cancelamos la espera porque ya no está "trabada"
+                if(en_espera_fijacion) {
+                    en_espera_fijacion = 0;
+                    if(timer_fijacion) { gbt_temporizador_destruir(timer_fijacion); timer_fijacion = NULL; }
+                }
+            } else {
+                // TOCÓ SUELO: Iniciamos la tolerancia si no estaba ya activa
+                if(!en_espera_fijacion){
+                    en_espera_fijacion = 1;
+                    timer_fijacion = gbt_temporizador_crear(TIEMPO_GRACIA);
+                }
+            }
+        }
+
+        //VERIFICACIÓN DE FIJACIÓN (Lock Delay)
+        // Ponlo justo debajo de la gravedad
+        if(en_espera_fijacion && timer_fijacion != NULL){
+            if(gbt_temporizador_consumir(timer_fijacion)){
                 fijar();
-                limpiar(nivel); //modifico para el aumento segun el nivel
-                actualizar_dificultad(&timer,&contador_fichas,&intervalo_actual);
-
-                //Para visualizar el cambio
-                printf("[PIEZA FIJADA] Total piezas: %d | Nivel actual: %d | Velocidad: %.2f ms\n",contador_fichas, nivel, intervalo_actual);
-
+                limpiar(nivel);
+                actualizar_dificultad(&timer, &contador_fichas, &intervalo_actual);
                 nueva();
+
+                en_espera_fijacion = 0;
+                gbt_temporizador_destruir(timer_fijacion);
+                timer_fijacion = NULL;
             }
         }
 
@@ -346,6 +451,7 @@ int main(){
 
     printf("GAME OVER\n");
 
+    if(timer_fijacion) gbt_temporizador_destruir(timer_fijacion); //libero mem
     //Aqui, no estoy muy segura de esto, pero le agregue lo de limpieza de memoria;
     gbt_temporizador_destruir(timer);
     gbt_destruir_ventana();
