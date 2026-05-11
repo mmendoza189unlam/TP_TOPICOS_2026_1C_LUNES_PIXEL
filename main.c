@@ -266,6 +266,7 @@ int main(){
             posY--;
             fijar();
             limpiar();
+            actualizar_dificultad(&timer, &contador_fichas, &intervalo_actual);
             nueva();
         }
         // SALIR
