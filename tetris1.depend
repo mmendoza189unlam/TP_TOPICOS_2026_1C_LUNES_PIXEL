@@ -1,10 +1,10 @@
 # depslib dependency file v1.0
-1778676021 source:c:\users\vega_\onedrive\documents\unlam\topicos_programacion\2026\tp\tetris\dibujos.c
+1778764068 source:c:\users\vega_\onedrive\documents\unlam\topicos_programacion\2026\tp\tetris\dibujos.c
 	"dibujos.h"
 	<stdio.h>
 	<string.h>
 
-1778680379 c:\users\vega_\onedrive\documents\unlam\topicos_programacion\2026\tp\tetris\dibujos.h
+1778764068 c:\users\vega_\onedrive\documents\unlam\topicos_programacion\2026\tp\tetris\dibujos.h
 	<stdint.h>
 	<GBT/gbt.h>
 

@@ -72,6 +72,14 @@ int pieza_actual, posX, posY;
 int siguiente;
 int bag[7], bag_index=0;
 
+enum {
+    ESTADO_JUGANDO,
+    ESTADO_PAUSA,
+    ESTADO_GAMEOVER
+};
+
+int estado = ESTADO_JUGANDO;
+
 void mezclar_bag(){
     for(int i=0;i<7;i++) bag[i]=i;
     for(int i=6;i>0;i--){      // <-- empieza desde el final
@@ -149,9 +157,11 @@ void nueva(){
     posY = 0;
 
     if(colisiona(piezas[pieza_actual], posX, posY)){
-        game_over = 1;
-    }
+    estado = ESTADO_GAMEOVER;
 }
+}
+
+void reiniciar_juego();
 
 void render(){
     gbt_borrar_backbuffer(0);
@@ -176,9 +186,6 @@ void render(){
         for(int lx = 0; lx < 3; lx++)  // lx en lugar de x
             if(letras_score[k][ly][lx])
                 gbt_dibujar_pixel(84 + k*(ANCHO_DIGITO+1) + lx, 2 + ly, AM);  // 2 + ly
-
-// Puntaje debajo del texto (solo una vez)
-    dibujar_numero(puntaje, 84, 10, AM);
 
 // Panel de puntaje (a la derecha, desde x=82)
 // Etiqueta "SC" en píxeles (simplificado, podés expandirlo)
@@ -215,6 +222,46 @@ for(int y = 0; y < alto_px; y++){
     gbt_dibujar_pixel(baseX, baseY + y, VE); // izquierda
     gbt_dibujar_pixel(baseX + ancho_px - 1, baseY + y, VE); // derecha
 }
+
+if(estado == ESTADO_PAUSA){
+
+    for(int y=55;y<75;y++)
+        for(int x=15;x<105;x++)
+            gbt_dibujar_pixel(x,y,AZ);
+
+    dibujar_texto("PAUSA", 40, 62, AM);
+}
+
+if(estado == ESTADO_GAMEOVER){
+
+    for(int y=45;y<95;y++)
+        for(int x=5;x<115;x++)
+            gbt_dibujar_pixel(x,y,RO);
+
+    dibujar_texto("GAME OVER", 25, 55, AM);
+
+    dibujar_texto("ENTER", 38, 70, VE);
+
+    dibujar_texto("REINTENTAR", 20, 80, VE);
+}
+
+}
+
+void reiniciar_juego(){
+
+    memset(tablero, 0, sizeof(tablero));
+
+    puntaje = 0;
+    game_over = 0;
+    estado = ESTADO_JUGANDO;
+
+    memcpy(piezas, piezas_orig, sizeof(piezas_orig));
+
+    mezclar_bag();
+
+    siguiente = siguiente_pieza();
+
+    nueva();
 }
 
 int main(){
@@ -230,54 +277,77 @@ int main(){
     nueva();
     tGBT_Temporizador* timer = gbt_temporizador_crear(0.5);
 
-while(!game_over){
+while(1){
 
-gbt_procesar_entrada();
+    gbt_procesar_entrada();
 
-// IZQUIERDA
-if(gbt_tecla_presionada(GBTK_IZQUIERDA)){
-    posX--;
-    if(colisiona(piezas[pieza_actual], posX, posY)) posX++;
-}
+    // PAUSA
+    if(gbt_tecla_presionada(GBTK_p)){
 
-// DERECHA
-if(gbt_tecla_presionada(GBTK_DERECHA)){
-    posX++;
-    if(colisiona(piezas[pieza_actual], posX, posY)) posX--;
-}
+        if(estado == ESTADO_JUGANDO)
+            estado = ESTADO_PAUSA;
 
-// ABAJO (1 paso por toque)
-if(gbt_tecla_presionada(GBTK_ABAJO)){
-    posY++;
-    if(colisiona(piezas[pieza_actual], posX, posY)){
-        posY--;
-    } else {
-        puntaje += 1;
+        else if(estado == ESTADO_PAUSA)
+            estado = ESTADO_JUGANDO;
+    }
+
+    if(estado == ESTADO_GAMEOVER){
+
+    if(gbt_tecla_presionada(GBTK_ENTER)){
+        reiniciar_juego();
     }
 }
 
-// ROTAR
-if(gbt_tecla_presionada(GBTK_ARRIBA)){
-    intentar_rotar();
-}
-
-// HARD DROP (ESPACIO)
-if(gbt_tecla_presionada(GBTK_ESPACIO)){
-    while(!colisiona(piezas[pieza_actual], posX, posY)){
-        posY++;
-        puntaje += 2;
+    // SALIR
+    if(gbt_tecla_presionada(GBTK_ESCAPE)){
+        break;
     }
-    posY--;
-    fijar();
-    limpiar();
-    nueva();
-}
 
-// SALIR
-if(gbt_tecla_presionada(GBTK_ESCAPE)){
-    break;
-}
+    // =========================
+    // SOLO JUEGA SI ESTÁ ACTIVO
+    // =========================
+    if(estado == ESTADO_JUGANDO){
 
+        // IZQUIERDA
+        if(gbt_tecla_presionada(GBTK_IZQUIERDA)){
+            posX--;
+            if(colisiona(piezas[pieza_actual], posX, posY)) posX++;
+        }
+
+        // DERECHA
+        if(gbt_tecla_presionada(GBTK_DERECHA)){
+            posX++;
+            if(colisiona(piezas[pieza_actual], posX, posY)) posX--;
+        }
+
+        // ABAJO
+        if(gbt_tecla_presionada(GBTK_ABAJO)){
+            posY++;
+            if(colisiona(piezas[pieza_actual], posX, posY)){
+                posY--;
+            } else {
+                puntaje += 1;
+            }
+        }
+
+        // ROTAR
+        if(gbt_tecla_presionada(GBTK_ARRIBA)){
+            intentar_rotar();
+        }
+
+        // HARD DROP
+        if(gbt_tecla_presionada(GBTK_ESPACIO)){
+            while(!colisiona(piezas[pieza_actual], posX, posY)){
+                posY++;
+                puntaje += 2;
+            }
+            posY--;
+            fijar();
+            limpiar();
+            nueva();
+        }
+
+        // CAÍDA AUTOMÁTICA
         if(gbt_temporizador_consumir(timer)){
             posY++;
             if(colisiona(piezas[pieza_actual],posX,posY)){
@@ -287,11 +357,12 @@ if(gbt_tecla_presionada(GBTK_ESCAPE)){
                 nueva();
             }
         }
-
-        render();
-        gbt_volcar_backbuffer();
-        gbt_esperar(16);
     }
+
+    render();
+    gbt_volcar_backbuffer();
+    gbt_esperar(16);
+}
 
     printf("GAME OVER\n");
     gbt_cerrar(); // ahora sí se llama correctamente

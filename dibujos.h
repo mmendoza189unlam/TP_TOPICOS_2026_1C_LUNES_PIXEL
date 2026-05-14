@@ -27,4 +27,9 @@ extern const uint8_t letras_next[4][5][3];
 
 void dibujar(const uint8_t sprite[][PIXELES_X_LADO], uint16_t oX, uint16_t oY);
 void dibujar_numero(int numero, uint16_t px, uint16_t py, uint8_t color);
+
+extern const uint8_t letras_mayus[26][5][3];
+
+void dibujar_texto(const char* txt, uint16_t px, uint16_t py, uint8_t color);
+
 #endif
