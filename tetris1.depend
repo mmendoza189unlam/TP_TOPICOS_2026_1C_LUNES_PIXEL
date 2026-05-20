@@ -30,7 +30,7 @@
 	<stdlib.h>
 	<stdint.h>
 
-1778676021 source:c:\users\vega_\onedrive\documents\unlam\topicos_programacion\2026\tp\tetris\main.c
+1778849589 source:c:\users\vega_\onedrive\documents\unlam\topicos_programacion\2026\tp\tetris\main.c
 	<stdio.h>
 	<stdlib.h>
 	<time.h>
@@ -38,4 +38,115 @@
 	<string.h>
 	"dibujos.h"
 	"GBT/gbt.h"
+
+1779215513 source:c:\users\usuario\downloads\tetris\dibujos.c
+	"dibujos.h"
+	<stdio.h>
+	<string.h>
+
+1779215513 c:\users\usuario\downloads\tetris\dibujos.h
+	<stdint.h>
+	<GBT/gbt.h>
+
+1779215513 c:\users\usuario\downloads\tetris\lib\gbt_v2026.1c.01\include\gbt\gbt.h
+	"gbt_entrada.h"
+	"gbt_graficos.h"
+	"gbt_logger.h"
+	"gbt_temporizador.h"
+	"gbt_vector.h"
+
+1779215513 c:\users\usuario\downloads\tetris\lib\gbt_v2026.1c.01\include\gbt\gbt_entrada.h
+	<stdint.h>
+
+1779215513 c:\users\usuario\downloads\tetris\lib\gbt_v2026.1c.01\include\gbt\gbt_graficos.h
+	<stdint.h>
+
+1779215513 c:\users\usuario\downloads\tetris\lib\gbt_v2026.1c.01\include\gbt\gbt_logger.h
+
+1779215513 c:\users\usuario\downloads\tetris\lib\gbt_v2026.1c.01\include\gbt\gbt_temporizador.h
+	<stdint.h>
+
+1779215513 c:\users\usuario\downloads\tetris\lib\gbt_v2026.1c.01\include\gbt\gbt_vector.h
+	<stdlib.h>
+	<stdint.h>
+
+1779218547 source:c:\users\usuario\downloads\tetris\main.c
+	<stdio.h>
+	<stdlib.h>
+	<time.h>
+	<stdint.h>
+	<string.h>
+	"dibujos.h"
+	"GBT/gbt.h"
+
+1779232830 source:c:\users\vega_\downloads\tetris_v1.2\dibujos.c
+	"dibujos.h"
+	<stdio.h>
+	<string.h>
+
+1779232830 c:\users\vega_\downloads\tetris_v1.2\dibujos.h
+	<stdint.h>
+	<GBT/gbt.h>
+
+1779229444 c:\users\vega_\downloads\tetris_v1.2\lib\gbt_v2026.1c.01\include\gbt\gbt.h
+	"gbt_entrada.h"
+	"gbt_graficos.h"
+	"gbt_logger.h"
+	"gbt_temporizador.h"
+	"gbt_vector.h"
+
+1779229444 c:\users\vega_\downloads\tetris_v1.2\lib\gbt_v2026.1c.01\include\gbt\gbt_entrada.h
+	<stdint.h>
+
+1779229444 c:\users\vega_\downloads\tetris_v1.2\lib\gbt_v2026.1c.01\include\gbt\gbt_graficos.h
+	<stdint.h>
+
+1779229444 c:\users\vega_\downloads\tetris_v1.2\lib\gbt_v2026.1c.01\include\gbt\gbt_logger.h
+
+1779229444 c:\users\vega_\downloads\tetris_v1.2\lib\gbt_v2026.1c.01\include\gbt\gbt_temporizador.h
+	<stdint.h>
+
+1779229444 c:\users\vega_\downloads\tetris_v1.2\lib\gbt_v2026.1c.01\include\gbt\gbt_vector.h
+	<stdlib.h>
+	<stdint.h>
+
+1779230324 source:c:\users\vega_\downloads\tetris_v1.2\main.c
+	<stdio.h>
+	<stdlib.h>
+	<time.h>
+	<stdint.h>
+	<string.h>
+	"dibujos.h"
+	"GBT/gbt.h"
+
+1779296125 source:c:\users\usuario\downloads\tetris_v1.2\dibujos.c
+	"dibujos.h"
+	<stdio.h>
+	<string.h>
+
+1779296125 c:\users\usuario\downloads\tetris_v1.2\dibujos.h
+	<stdint.h>
+	<GBT/gbt.h>
+
+1779296126 c:\users\usuario\downloads\tetris_v1.2\lib\gbt_v2026.1c.01\include\gbt\gbt.h
+	"gbt_entrada.h"
+	"gbt_graficos.h"
+	"gbt_logger.h"
+	"gbt_temporizador.h"
+	"gbt_vector.h"
+
+1779296126 c:\users\usuario\downloads\tetris_v1.2\lib\gbt_v2026.1c.01\include\gbt\gbt_entrada.h
+	<stdint.h>
+
+1779296126 c:\users\usuario\downloads\tetris_v1.2\lib\gbt_v2026.1c.01\include\gbt\gbt_graficos.h
+	<stdint.h>
+
+1779296126 c:\users\usuario\downloads\tetris_v1.2\lib\gbt_v2026.1c.01\include\gbt\gbt_logger.h
+
+1779296126 c:\users\usuario\downloads\tetris_v1.2\lib\gbt_v2026.1c.01\include\gbt\gbt_temporizador.h
+	<stdint.h>
+
+1779296126 c:\users\usuario\downloads\tetris_v1.2\lib\gbt_v2026.1c.01\include\gbt\gbt_vector.h
+	<stdlib.h>
+	<stdint.h>
 

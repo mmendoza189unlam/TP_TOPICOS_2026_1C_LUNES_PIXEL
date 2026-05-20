@@ -14,6 +14,10 @@
 extern const uint8_t digitos[10][5][3];
 extern const uint8_t letras_score[5][5][3];
 extern const uint8_t letras_next[4][5][3];
+extern int escala_dibujo;
+extern int offsetX;
+extern int offsetY;
+
 
 #define FONDO 0
 #define CE 1
