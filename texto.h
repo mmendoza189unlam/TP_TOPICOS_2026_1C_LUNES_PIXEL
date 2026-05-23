@@ -1,10 +1,15 @@
+/*
+ Texto.h - Cabecera del módulo de renderizado de texto.
+ Define la interfaz pública para dibujar cadenas de caracteres
+ utilizando el alfabeto cargado en memoria.
+ */
 #ifndef TEXTO_H_INCLUDED
 #define TEXTO_H_INCLUDED
 
 #include "alfabeto.h"
 
-// Dibuja un string mayúsculo a partir de (col, fila)
-// Ignora caracteres que no sean A-Z o espacio
+// Dibuja un string mayúsculo a partir de (col, fila).
+// Ignora caracteres que no sean A-Z o espacio.
 void textoDibujar(const Alfabeto* alf, const char* texto, int col, int fila);
 
 #endif // TEXTO_H_INCLUDED
