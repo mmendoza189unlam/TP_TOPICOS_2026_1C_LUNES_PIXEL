@@ -1,268 +1,268 @@
 #include "Alfabeto.h"
-#define A 2  // Índice de nuestro color Amarillo
-#define N 0  // Índice de nuestro color Transparente (Negro)
+#define A 2
+#define TR 0  // Índice de nuestro color Amarillo
 /* Se plasman las letras de la a-z en matrices de 8x8 */
 static const uint8_t fuenteLetras[CANT_LETRAS][8][PIXELES_X_LADO] =
 {
   {   /* Letra A */
-        {N, N, A, A, A, A, N, N},
-        {N, A, A, N, N, A, A, N},
-        {A, A, N, N, N, N, A, A},
+        {TR, TR, A, A, A, A, TR, TR},
+        {TR, A, A, TR, TR, A, A, TR},
+        {A, A, TR, TR, TR, TR, A, A},
         {A, A, A, A, A, A, A, A},
-        {A, A, N, N, N, N, A, A},
-        {A, A, N, N, N, N, A, A},
-        {A, A, N, N, N, N, A, A},
-        {A, A, N, N, N, N, A, A}
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, TR, TR, TR, TR, A, A}
     },
     {   /* Letra B */
-        {A, A, A, A, A, A, N, N},
-        {A, A, N, N, N, A, A, N},
-        {A, A, N, N, N, N, A, A},
-        {A, A, A, A, A, A, N, N},
-        {A, A, N, N, N, N, A, A},
-        {A, A, N, N, N, N, A, A},
-        {A, A, N, N, N, A, A, N},
-        {A, A, A, A, A, A, N, N}
+        {A, A, A, A, A, A, TR, TR},
+        {A, A, TR, TR, TR, A, A, TR},
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, A, A, A, A, TR, TR},
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, TR, TR, TR, A, A, TR},
+        {A, A, A, A, A, A, TR, TR}
     },
     {   /* Letra C */
-        {N, A, A, A, A, A, A, N},
-        {A, A, N, N, N, N, N, A},
-        {A, A, N, N, N, N, N, N},
-        {A, A, N, N, N, N, N, N},
-        {A, A, N, N, N, N, N, N},
-        {A, A, N, N, N, N, N, N},
-        {A, A, N, N, N, N, N, A},
-        {N, A, A, A, A, A, A, N}
+        {TR, A, A, A, A, A, A, TR},
+        {A, A, TR, TR, TR, TR, TR, A},
+        {A, A, TR, TR, TR, TR, TR, TR},
+        {A, A, TR, TR, TR, TR, TR, TR},
+        {A, A, TR, TR, TR, TR, TR, TR},
+        {A, A, TR, TR, TR, TR, TR, TR},
+        {A, A, TR, TR, TR, TR, TR, A},
+        {TR, A, A, A, A, A, A, TR}
     },
     {   /* Letra D */
-        {A, A, A, A, A, N, N, N},
-        {A, A, N, N, N, A, A, N},
-        {A, A, N, N, N, N, A, A},
-        {A, A, N, N, N, N, A, A},
-        {A, A, N, N, N, N, A, A},
-        {A, A, N, N, N, N, A, A},
-        {A, A, N, N, N, A, A, N},
-        {A, A, A, A, A, N, N, N}
+        {A, A, A, A, A, TR, TR, TR},
+        {A, A, TR, TR, TR, A, A, TR},
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, TR, TR, TR, A, A, TR},
+        {A, A, A, A, A, TR, TR, TR}
     },
     {   /* Letra E */
         {A, A, A, A, A, A, A, A},
-        {A, A, N, N, N, N, N, N},
-        {A, A, N, N, N, N, N, N},
-        {A, A, A, A, A, A, N, N},
-        {A, A, N, N, N, N, N, N},
-        {A, A, N, N, N, N, N, N},
-        {A, A, N, N, N, N, N, N},
+        {A, A, TR, TR, TR, TR, TR, TR},
+        {A, A, TR, TR, TR, TR, TR, TR},
+        {A, A, A, A, A, A, TR, TR},
+        {A, A, TR, TR, TR, TR, TR, TR},
+        {A, A, TR, TR, TR, TR, TR, TR},
+        {A, A, TR, TR, TR, TR, TR, TR},
         {A, A, A, A, A, A, A, A}
     },
     {   /* Letra F */
         {A, A, A, A, A, A, A, A},
-        {A, A, N, N, N, N, N, N},
-        {A, A, N, N, N, N, N, N},
-        {A, A, A, A, A, A, N, N},
-        {A, A, N, N, N, N, N, N},
-        {A, A, N, N, N, N, N, N},
-        {A, A, N, N, N, N, N, N},
-        {A, A, N, N, N, N, N, N}
+        {A, A, TR, TR, TR, TR, TR, TR},
+        {A, A, TR, TR, TR, TR, TR, TR},
+        {A, A, A, A, A, A, TR, TR},
+        {A, A, TR, TR, TR, TR, TR, TR},
+        {A, A, TR, TR, TR, TR, TR, TR},
+        {A, A, TR, TR, TR, TR, TR, TR},
+        {A, A, TR, TR, TR, TR, TR, TR}
     },
     {   /* Letra G */
-        {N, A, A, A, A, A, A, N},
-        {A, A, N, N, N, N, N, A},
-        {A, A, N, N, N, N, N, N},
-        {A, A, N, N, A, A, A, A},
-        {A, A, N, N, N, N, A, A},
-        {A, A, N, N, N, N, A, A},
-        {A, A, N, N, N, N, A, A},
-        {N, A, A, A, A, A, A, N}
+        {TR, A, A, A, A, A, A, TR},
+        {A, A, TR, TR, TR, TR, TR, A},
+        {A, A, TR, TR, TR, TR, TR, TR},
+        {A, A, TR, TR, A, A, A, A},
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, TR, TR, TR, TR, A, A},
+        {TR, A, A, A, A, A, A, TR}
     },
     {   /* Letra H */
-        {A, A, N, N, N, N, A, A},
-        {A, A, N, N, N, N, A, A},
-        {A, A, N, N, N, N, A, A},
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, TR, TR, TR, TR, A, A},
         {A, A, A, A, A, A, A, A},
-        {A, A, N, N, N, N, A, A},
-        {A, A, N, N, N, N, A, A},
-        {A, A, N, N, N, N, A, A},
-        {A, A, N, N, N, N, A, A}
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, TR, TR, TR, TR, A, A}
     },
 
     {   /* Letra I */
         {A, A, A, A, A, A, A, A},
-        {N, N, A, A, A, A, N, N},
-        {N, N, N, A, A, N, N, N},
-        {N, N, N, A, A, N, N, N},
-        {N, N, N, A, A, N, N, N},
-        {N, N, N, A, A, N, N, N},
-        {N, N, A, A, A, A, N, N},
+        {TR, TR, A, A, A, A, TR, TR},
+        {TR, TR, TR, A, A, TR, TR, TR},
+        {TR, TR, TR, A, A, TR, TR, TR},
+        {TR, TR, TR, A, A, TR, TR, TR},
+        {TR, TR, TR, A, A, TR, TR, TR},
+        {TR, TR, A, A, A, A, TR, TR},
         {A, A, A, A, A, A, A, A}
     },
     {   /* Letra J */
-        {N, N, N, A, A, A, A, A},
-        {N, N, N, N, N, A, A, A},
-        {N, N, N, N, N, A, A, A},
-        {N, N, N, N, N, A, A, A},
-        {A, A, N, N, N, A, A, A},
-        {A, A, N, N, N, A, A, A},
-        {A, A, N, N, N, A, A, A},
-        {N, A, A, A, A, A, A, N}
+        {TR, TR, TR, A, A, A, A, A},
+        {TR, TR, TR, TR, TR, A, A, A},
+        {TR, TR, TR, TR, TR, A, A, A},
+        {TR, TR, TR, TR, TR, A, A, A},
+        {A, A, TR, TR, TR, A, A, A},
+        {A, A, TR, TR, TR, A, A, A},
+        {A, A, TR, TR, TR, A, A, A},
+        {TR, A, A, A, A, A, A, TR}
     },
     {   /* Letra K */
-        {A, A, N, N, N, A, A, N},
-        {A, A, N, N, A, A, N, N},
-        {A, A, N, A, A, N, N, N},
-        {A, A, A, A, N, N, N, N},
-        {A, A, A, A, N, N, N, N},
-        {A, A, N, A, A, N, N, N},
-        {A, A, N, N, A, A, N, N},
-        {A, A, N, N, N, A, A, N}
+        {A, A, TR, TR, TR, A, A, TR},
+        {A, A, TR, TR, A, A, TR, TR},
+        {A, A, TR, A, A, TR, TR, TR},
+        {A, A, A, A, TR, TR, TR, TR},
+        {A, A, A, A, TR, TR, TR, TR},
+        {A, A, TR, A, A, TR, TR, TR},
+        {A, A, TR, TR, A, A, TR, TR},
+        {A, A, TR, TR, TR, A, A, TR}
     },
     {   /* Letra L */
-        {A, A, N, N, N, N, N, N},
-        {A, A, N, N, N, N, N, N},
-        {A, A, N, N, N, N, N, N},
-        {A, A, N, N, N, N, N, N},
-        {A, A, N, N, N, N, N, N},
-        {A, A, N, N, N, N, N, N},
-        {A, A, N, N, N, N, N, N},
+        {A, A, TR, TR, TR, TR, TR, TR},
+        {A, A, TR, TR, TR, TR, TR, TR},
+        {A, A, TR, TR, TR, TR, TR, TR},
+        {A, A, TR, TR, TR, TR, TR, TR},
+        {A, A, TR, TR, TR, TR, TR, TR},
+        {A, A, TR, TR, TR, TR, TR, TR},
+        {A, A, TR, TR, TR, TR, TR, TR},
         {A, A, A, A, A, A, A, A}
     },
     {   /* Letra M */
-        {A, A, N, N, N, N, A, A},
-        {A, A, A, N, N, A, A, A},
-        {A, A, N, A, A, N, A, A},
-        {A, A, N, N, N, N, A, A},
-        {A, A, N, N, N, N, A, A},
-        {A, A, N, N, N, N, A, A},
-        {A, A, N, N, N, N, A, A},
-        {A, A, N, N, N, N, A, A}
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, A, TR, TR, A, A, A},
+        {A, A, TR, A, A, TR, A, A},
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, TR, TR, TR, TR, A, A}
     },
-    {   /* Letra N */
-        {A, A, N, N, N, N, A, A},
-        {A, A, A, N, N, N, A, A},
-        {A, A, N, A, N, N, A, A},
-        {A, A, N, N, A, N, A, A},
-        {A, A, N, N, N, A, A, A},
-        {A, A, N, N, N, N, A, A},
-        {A, A, N, N, N, N, A, A},
-        {A, A, N, N, N, N, A, A}
+    {   /* Letra TR */
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, A, TR, TR, TR, A, A},
+        {A, A, TR, A, TR, TR, A, A},
+        {A, A, TR, TR, A, TR, A, A},
+        {A, A, TR, TR, TR, A, A, A},
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, TR, TR, TR, TR, A, A}
     },
     {   /* Letra O */
-        {N, A, A, A, A, A, A, N},
-        {A, A, N, N, N, N, A, A},
-        {A, A, N, N, N, N, A, A},
-        {A, A, N, N, N, N, A, A},
-        {A, A, N, N, N, N, A, A},
-        {A, A, N, N, N, N, A, A},
-        {A, A, N, N, N, N, A, A},
-        {N, A, A, A, A, A, A, N}
+        {TR, A, A, A, A, A, A, TR},
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, TR, TR, TR, TR, A, A},
+        {TR, A, A, A, A, A, A, TR}
     },
     {   /* Letra P */
-        {A, A, A, A, A, A, N, N},
-        {A, A, N, N, N, A, A, N},
-        {A, A, N, N, N, N, A, A},
-        {A, A, A, A, A, A, N, N},
-        {A, A, N, N, N, N, N, N},
-        {A, A, N, N, N, N, N, N},
-        {A, A, N, N, N, N, N, N},
-        {A, A, N, N, N, N, N, N}
+        {A, A, A, A, A, A, TR, TR},
+        {A, A, TR, TR, TR, A, A, TR},
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, A, A, A, A, TR, TR},
+        {A, A, TR, TR, TR, TR, TR, TR},
+        {A, A, TR, TR, TR, TR, TR, TR},
+        {A, A, TR, TR, TR, TR, TR, TR},
+        {A, A, TR, TR, TR, TR, TR, TR}
     },
     {   /* Letra Q */
-        {N, A, A, A, A, A, A, N},
-        {A, A, N, N, N, N, A, A},
-        {A, A, N, N, N, N, A, A},
-        {A, A, N, N, N, N, A, A},
-        {A, A, N, N, A, N, A, A},
-        {A, A, N, N, N, A, A, A},
-        {A, A, N, N, N, N, A, A},
-        {N, A, A, A, A, A, A, A}
+        {TR, A, A, A, A, A, A, TR},
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, TR, TR, A, TR, A, A},
+        {A, A, TR, TR, TR, A, A, A},
+        {A, A, TR, TR, TR, TR, A, A},
+        {TR, A, A, A, A, A, A, A}
     },
     {   /* Letra R */
-        {A, A, A, A, A, A, N, N},
-        {A, A, N, N, N, A, A, N},
-        {A, A, N, N, N, N, A, A},
-        {A, A, A, A, A, A, N, N},
-        {A, A, N, A, A, N, N, N},
-        {A, A, N, N, A, A, N, N},
-        {A, A, N, N, N, A, A, N},
-        {A, A, N, N, N, N, A, A}
+        {A, A, A, A, A, A, TR, TR},
+        {A, A, TR, TR, TR, A, A, TR},
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, A, A, A, A, TR, TR},
+        {A, A, TR, A, A, TR, TR, TR},
+        {A, A, TR, TR, A, A, TR, TR},
+        {A, A, TR, TR, TR, A, A, TR},
+        {A, A, TR, TR, TR, TR, A, A}
     },
     {   /* Letra S */
-        {N, A, A, A, A, A, A, A},
-        {A, A, N, N, N, N, N, N},
-        {A, A, N, N, N, N, N, N},
-        {N, A, A, A, A, A, A, N},
-        {N, N, N, N, N, N, A, A},
-        {N, N, N, N, N, N, A, A},
-        {N, N, N, N, N, N, A, A},
-        {A, A, A, A, A, A, A, N}
+        {TR, A, A, A, A, A, A, A},
+        {A, A, TR, TR, TR, TR, TR, TR},
+        {A, A, TR, TR, TR, TR, TR, TR},
+        {TR, A, A, A, A, A, A, TR},
+        {TR, TR, TR, TR, TR, TR, A, A},
+        {TR, TR, TR, TR, TR, TR, A, A},
+        {TR, TR, TR, TR, TR, TR, A, A},
+        {A, A, A, A, A, A, A, TR}
     },
     {   /* Letra T */
         {A, A, A, A, A, A, A, A},
-        {N, N, N, A, A, N, N, N},
-        {N, N, N, A, A, N, N, N},
-        {N, N, N, A, A, N, N, N},
-        {N, N, N, A, A, N, N, N},
-        {N, N, N, A, A, N, N, N},
-        {N, N, N, A, A, N, N, N},
-        {N, N, N, A, A, N, N, N}
+        {TR, TR, TR, A, A, TR, TR, TR},
+        {TR, TR, TR, A, A, TR, TR, TR},
+        {TR, TR, TR, A, A, TR, TR, TR},
+        {TR, TR, TR, A, A, TR, TR, TR},
+        {TR, TR, TR, A, A, TR, TR, TR},
+        {TR, TR, TR, A, A, TR, TR, TR},
+        {TR, TR, TR, A, A, TR, TR, TR}
     },
     {   /* Letra U */
-        {A, A, N, N, N, N, A, A},
-        {A, A, N, N, N, N, A, A},
-        {A, A, N, N, N, N, A, A},
-        {A, A, N, N, N, N, A, A},
-        {A, A, N, N, N, N, A, A},
-        {A, A, N, N, N, N, A, A},
-        {A, A, N, N, N, N, A, A},
-        {N, A, A, A, A, A, A, N}
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, TR, TR, TR, TR, A, A},
+        {TR, A, A, A, A, A, A, TR}
     },
     {   /* Letra V */
-        {A, A, N, N, N, N, A, A},
-        {A, A, N, N, N, N, A, A},
-        {A, A, N, N, N, N, A, A},
-        {N, A, A, N, N, A, A, N},
-        {N, A, A, N, N, A, A, N},
-        {N, N, A, A, A, A, N, N},
-        {N, N, A, A, A, A, N, N},
-        {N, N, N, A, A, N, N, N}
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, TR, TR, TR, TR, A, A},
+        {TR, A, A, TR, TR, A, A, TR},
+        {TR, A, A, TR, TR, A, A, TR},
+        {TR, TR, A, A, A, A, TR, TR},
+        {TR, TR, A, A, A, A, TR, TR},
+        {TR, TR, TR, A, A, TR, TR, TR}
     },
     {   /* Letra W */
-        {A, A, N, N, N, N, A, A},
-        {A, A, N, N, N, N, A, A},
-        {A, A, N, N, N, N, A, A},
-        {A, A, N, A, A, N, A, A},
-        {A, A, N, A, A, N, A, A},
-        {A, A, A, N, N, A, A, A},
-        {A, A, A, N, N, A, A, A},
-        {A, A, N, N, N, N, A, A}
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, TR, TR, TR, TR, A, A},
+        {A, A, TR, A, A, TR, A, A},
+        {A, A, TR, A, A, TR, A, A},
+        {A, A, A, TR, TR, A, A, A},
+        {A, A, A, TR, TR, A, A, A},
+        {A, A, TR, TR, TR, TR, A, A}
     },
     {   /* Letra X */
-        {A, A, N, N, N, N, A, A},
-        {N, A, A, N, N, A, A, N},
-        {N, N, A, A,A, A, N, N},
-        {N, N, N, A, A, N, N, N},
-        {N, N, N, A, A, N, N, N},
-        {N, N, A, A, A, A, N, N},
-        {N, A, A, N, N, A, A, N},
-        {A, A, N, N, N, N, A, A}
+        {A, A, TR, TR, TR, TR, A, A},
+        {TR, A, A, TR, TR, A, A, TR},
+        {TR, TR, A, A,A, A, TR, TR},
+        {TR, TR, TR, A, A, TR, TR, TR},
+        {TR, TR, TR, A, A, TR, TR, TR},
+        {TR, TR, A, A, A, A, TR, TR},
+        {TR, A, A, TR, TR, A, A, TR},
+        {A, A, TR, TR, TR, TR, A, A}
     },
     {   /* Letra Y */
-        {A, A, N, N, N, N, A, A},
-        {N, A, A, N, N, A, A, N},
-        {N, N, A, A, A, A, N, N},
-        {N, N, N, A, A, N, N, N},
-        {N, N, N, A, A, N, N, N},
-        {N, N, N, A, A, N, N, N},
-        {N, N, N, A, A, N, N, N},
-        {N, N, N, A, A, N, N, N}
+        {A, A, TR, TR, TR, TR, A, A},
+        {TR, A, A, TR, TR, A, A, TR},
+        {TR, TR, A, A, A, A, TR, TR},
+        {TR, TR, TR, A, A, TR, TR, TR},
+        {TR, TR, TR, A, A, TR, TR, TR},
+        {TR, TR, TR, A, A, TR, TR, TR},
+        {TR, TR, TR, A, A, TR, TR, TR},
+        {TR, TR, TR, A, A, TR, TR, TR}
     },
     {   /* Letra Z */
         {A, A, A, A, A, A, A, A},
-        {N, N, N, N, N, A, A, N},
-        {N, N, N, N, A, A, N, N},
-        {N, N, N, A, A, N, N, N},
-        {N, N, A, A, N, N, N, N},
-        {N, A, A, N, N, N, N, N},
-        {A, A, N, N, N, N, N, N},
+        {TR, TR, TR, TR, TR, A, A, TR},
+        {TR, TR, TR, TR, A, A, TR, TR},
+        {TR, TR, TR, A, A, TR, TR, TR},
+        {TR, TR, A, A, TR, TR, TR, TR},
+        {TR, A, A, TR, TR, TR, TR, TR},
+        {A, A, TR, TR, TR, TR, TR, TR},
         {A, A, A, A, A, A, A, A}
     }
 };
@@ -270,105 +270,105 @@ static const uint8_t fuenteLetras[CANT_LETRAS][8][PIXELES_X_LADO] =
 /* Se plasman los numeros del 0 al 9 en matrices de 8x8 */
 static const uint8_t fuenteNumeros[CANT_NUMEROS][8][PIXELES_X_LADO] =
 {
-    {   /* Numero 0 */
-        {N, A, A, A, A, A, A, N},
-        {A, N, N, N, N, N, N, A},
-        {A, N, N, N, N, N, N, A},
-        {A, N, N, N, N, N, N, A},
-        {A, N, N, N, N, N, N, A},
-        {A, N, N, N, N, N, N, A},
-        {A, N, N, N, N, N, N, A},
-        {N, A, A, A, A, A, A, N}
+    {   /* TRumero 0 */
+        {TR, A, A, A, A, A, A, TR},
+        {A, TR, TR, TR, TR, TR, TR, A},
+        {A, TR, TR, TR, TR, TR, TR, A},
+        {A, TR, TR, TR, TR, TR, TR, A},
+        {A, TR, TR, TR, TR, TR, TR, A},
+        {A, TR, TR, TR, TR, TR, TR, A},
+        {A, TR, TR, TR, TR, TR, TR, A},
+        {TR, A, A, A, A, A, A, TR}
     },
-    {   /* Numero 1 */
-        {N, N, N, A, A, N, N, N},
-        {N, N, A, A, A, N, N, N},
-        {N, A, N, A, A, N, N, N},
-        {N, N, N, A, A, N, N, N},
-        {N, N, N, A, A, N, N, N},
-        {N, N, N, A, A, N, N, N},
-        {N, N, N, A, A, N, N, N},
+    {   /* TRumero 1 */
+        {TR, TR, TR, A, A, TR, TR, TR},
+        {TR, TR, A, A, A, TR, TR, TR},
+        {TR, A, TR, A, A, TR, TR, TR},
+        {TR, TR, TR, A, A, TR, TR, TR},
+        {TR, TR, TR, A, A, TR, TR, TR},
+        {TR, TR, TR, A, A, TR, TR, TR},
+        {TR, TR, TR, A, A, TR, TR, TR},
         {A, A, A, A, A, A, A, A}
     },
-    {   /* Numero 2 */
-        {N, A, A, A, A, A, A, N},
-        {A, N, N, N, N, N, N, A},
-        {N, N, N, N, N, N, N, A},
-        {N, N, N, N, N, N, A, N},
-        {N, N, N, N, N, A, N, N},
-        {N, N, N, N, A, N, N, N},
-        {N, N, N, A, N, N, N, N},
+    {   /* TRumero 2 */
+        {TR, A, A, A, A, A, A, TR},
+        {A, TR, TR, TR, TR, TR, TR, A},
+        {TR, TR, TR, TR, TR, TR, TR, A},
+        {TR, TR, TR, TR, TR, TR, A, TR},
+        {TR, TR, TR, TR, TR, A, TR, TR},
+        {TR, TR, TR, TR, A, TR, TR, TR},
+        {TR, TR, TR, A, TR, TR, TR, TR},
         {A, A, A, A, A, A, A, A}
     },
-    {   /* Numero 3 */
-        {A, A, A, A, A, A, A, N},
-        {N, N, N, N, N, N, N, A},
-        {N, N, N, N, A, A, A, N},
-        {N, N, N, A, A, A, A, N},
-        {N, N, N, N, A, A, A, N},
-        {N, N, N, N, N, N, N, A},
-        {A, N, N, N, N, N, N, A},
-        {N, A, A, A, A, A, A, N}
+    {   /* TRumero 3 */
+        {A, A, A, A, A, A, A, TR},
+        {TR, TR, TR, TR, TR, TR, TR, A},
+        {TR, TR, TR, TR, A, A, A, TR},
+        {TR, TR, TR, A, A, A, A, TR},
+        {TR, TR, TR, TR, A, A, A, TR},
+        {TR, TR, TR, TR, TR, TR, TR, A},
+        {A, TR, TR, TR, TR, TR, TR, A},
+        {TR, A, A, A, A, A, A, TR}
     },
-    {   /* Numero 4 */
-        {N, N, N, N, A, A, N, N},
-        {N, N, N, A, A, A, N, N},
-        {N, N, A, N, A, A, N, N},
-        {N, A, N, N, A, A, N, N},
+    {   /* TRumero 4 */
+        {TR, TR, TR, TR, A, A, TR, TR},
+        {TR, TR, TR, A, A, A, TR, TR},
+        {TR, TR, A, TR, A, A, TR, TR},
+        {TR, A, TR, TR, A, A, TR, TR},
         {A, A, A, A, A, A, A, A},
-        {N, N, N, N, A, A, N, N},
-        {N, N, N, N, A, A, N, N},
-        {N, N, N, N, A, A, N, N}
+        {TR, TR, TR, TR, A, A, TR, TR},
+        {TR, TR, TR, TR, A, A, TR, TR},
+        {TR, TR, TR, TR, A, A, TR, TR}
     },
-    {   /* Numero 5 */
+    {   /* TRumero 5 */
         {A, A, A, A, A, A, A, A},
-        {A, N, N, N, N, N, N, N},
-        {A, A, A, A, A, A, A, N},
-        {N, N, N, N, N, N, N, A},
-        {N, N, N, N, N, N, N, A},
-        {N, N, N, N, N, N, N, A},
-        {A, N, N, N, N, N, N, A},
-        {N, A, A, A, A, A, A, N}
+        {A, TR, TR, TR, TR, TR, TR, TR},
+        {A, A, A, A, A, A, A, TR},
+        {TR, TR, TR, TR, TR, TR, TR, A},
+        {TR, TR, TR, TR, TR, TR, TR, A},
+        {TR, TR, TR, TR, TR, TR, TR, A},
+        {A, TR, TR, TR, TR, TR, TR, A},
+        {TR, A, A, A, A, A, A, TR}
     },
-    {   /* Numero 6 */
-        {N, A, A, A, A, A, A, N},
-        {A, N, N, N, N, N, N, N},
-        {A, N, N, N, N, N, N, N},
-        {A, A, A, A, A, A, A, N},
-        {A, N, N, N, N, N, N, A},
-        {A, N, N, N, N, N, N, A},
-        {A, N, N, N, N, N, N, A},
-        {N, A, A, A, A, A, A, N}
+    {   /* TRumero 6 */
+        {TR, A, A, A, A, A, A, TR},
+        {A, TR, TR, TR, TR, TR, TR, TR},
+        {A, TR, TR, TR, TR, TR, TR, TR},
+        {A, A, A, A, A, A, A, TR},
+        {A, TR, TR, TR, TR, TR, TR, A},
+        {A, TR, TR, TR, TR, TR, TR, A},
+        {A, TR, TR, TR, TR, TR, TR, A},
+        {TR, A, A, A, A, A, A, TR}
     },
-    {   /* Numero 7 */
+    {   /* TRumero 7 */
         {A, A, A, A, A, A, A, A},
-        {N, N, N, N, N, N, N, A},
-        {N, N, N, N, N, N, A, N},
-        {N, N, N, N, N, A, N, N},
-        {N, N, N, N, A, N, N, N},
-        {N, N, N, A, N, N, N, N},
-        {N, N, A, N, N, N, N, N},
-        {N, A, N, N, N, N, N, N}
+        {TR, TR, TR, TR, TR, TR, TR, A},
+        {TR, TR, TR, TR, TR, TR, A, TR},
+        {TR, TR, TR, TR, TR, A, TR, TR},
+        {TR, TR, TR, TR, A, TR, TR, TR},
+        {TR, TR, TR, A, TR, TR, TR, TR},
+        {TR, TR, A, TR, TR, TR, TR, TR},
+        {TR, A, TR, TR, TR, TR, TR, TR}
     },
-    {   /* Numero 8 */
-        {N, A, A, A, A, A, A, N},
-        {A, N, N, N, N, N, N, A},
-        {A, N, N, N, N, N, N, A},
-        {N, A, A, A, A, A, A, N},
-        {A, N, N, N, N, N, N, A},
-        {A, N, N, N, N, N, N, A},
-        {A, N, N, N, N, N, N, A},
-        {N, A, A, A, A, A, A, N}
+    {   /* TRumero 8 */
+        {TR, A, A, A, A, A, A, TR},
+        {A, TR, TR, TR, TR, TR, TR, A},
+        {A, TR, TR, TR, TR, TR, TR, A},
+        {TR, A, A, A, A, A, A, TR},
+        {A, TR, TR, TR, TR, TR, TR, A},
+        {A, TR, TR, TR, TR, TR, TR, A},
+        {A, TR, TR, TR, TR, TR, TR, A},
+        {TR, A, A, A, A, A, A, TR}
     },
-    {   /* Numero 9 */
-        {N, A, A, A, A, A, A, N},
-        {A, N, N, N, N, N, N, A},
-        {A, N, N, N, N, N, N, A},
-        {N, A, A, A, A, A, A, A},
-        {N, N, N, N, N, N, N, A},
-        {N, N, N, N, N, N, N, A},
-        {N, N, N, N, N, N, N, A},
-        {N, A, A, A, A, A, A, N}
+    {   /* TRumero 9 */
+        {TR, A, A, A, A, A, A, TR},
+        {A, TR, TR, TR, TR, TR, TR, A},
+        {A, TR, TR, TR, TR, TR, TR, A},
+        {TR, A, A, A, A, A, A, A},
+        {TR, TR, TR, TR, TR, TR, TR, A},
+        {TR, TR, TR, TR, TR, TR, TR, A},
+        {TR, TR, TR, TR, TR, TR, TR, A},
+        {TR, A, A, A, A, A, A, TR}
     }
 };
 
