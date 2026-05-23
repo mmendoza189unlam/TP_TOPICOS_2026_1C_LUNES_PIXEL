@@ -1,7 +1,7 @@
 #ifndef ALFABETO_H_INCLUDED
 #define ALFABETO_H_INCLUDED
 
-#include "Letra.h"
+#include "letra.h"
 
 #define CANT_LETRAS  26
 #define CANT_NUMEROS 10
@@ -18,3 +18,4 @@ const Letra* alfabetoObtenerLetra(const Alfabeto* alf, char c);   // 'A'-'Z'
 const Letra* alfabetoObtenerNumero(const Alfabeto* alf, int n);   //  0 - 9
 
 #endif // ALFABETO_H_INCLUDED
+

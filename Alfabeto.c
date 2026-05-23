@@ -1,5 +1,6 @@
 #include "Alfabeto.h"
-
+#define A 2  // Índice de nuestro color Amarillo
+#define N 0  // Índice de nuestro color Transparente (Negro)
 /* Se plasman las letras de la a-z en matrices de 8x8 */
 static const uint8_t fuenteLetras[CANT_LETRAS][8][PIXELES_X_LADO] =
 {
