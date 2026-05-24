@@ -90,20 +90,32 @@ static void fijar(t_tetris* j) {
 // Verifica líneas completas, las elimina y desplaza las superiores
 static void limpiar(t_tetris* j) {
     int filas = 0;
+
     for (int y = 0; y < ALTO_TABLERO; y++) {
         int llena = 1;
         for (int x = 0; x < ANCHO_TABLERO; x++) {
             if (!j->tablero[y][x]) {
                 llena = 0;
+                break; // Si hay un espacio vacío, no está llena
             }
         }
         if (llena) {
+            // Guardamos la dirección de memoria de la fila que se completó
+            uint8_t* fila_temporal = j->tablero[y];
+
+            // Desplazamos únicamente los PUNTEROS de las filas superiores hacia abajo
             for (int yy = y; yy > 0; yy--) {
-                for (int x = 0; x < ANCHO_TABLERO; x++) {
-                    j->tablero[yy][x] = j->tablero[yy - 1][x];
-                }
+                j->tablero[yy] = j->tablero[yy - 1];
             }
-            y--;
+
+            // El puntero de la fila eliminada se convierte ahora en la nueva fila superior (fila 0)
+            j->tablero[0] = fila_temporal;
+
+            // Limpiamos los elementos de esta nueva fila superior poniéndolos en 0
+            for (int x = 0; x < ANCHO_TABLERO; x++) {
+                j->tablero[0][x] = 0;
+            }
+
             filas++;
             j->lineas_totales ++; //Suma al acumulador global de lineas
         }
@@ -144,7 +156,24 @@ void tetris_nueva(t_tetris* j) {
 
 // Inicializa el tablero y variables de estado para una nueva partida
 void tetris_reiniciar(t_tetris* j) {
-    memset(j->tablero, 0, sizeof(j->tablero));
+
+    // Primero liberamos memoria si es que ya había sido asignada en una partida anterior
+    for (int y = 0; y < ALTO_TABLERO; y++) {
+        if (j->tablero[y] != NULL) {
+            free(j->tablero[y]);
+            j->tablero[y] = NULL;
+        }
+    }
+
+    // Asignamos memoria dinámica para cada una de las filas
+    for (int y = 0; y < ALTO_TABLERO; y++) {
+        j->tablero[y] = (uint8_t*)malloc(ANCHO_TABLERO * sizeof(uint8_t));
+        // Inicializamos la fila en 0 (vacía)
+        for (int x = 0; x < ANCHO_TABLERO; x++) {
+            j->tablero[y][x] = 0;
+        }
+    }
+
     memset(j->cant_piezas_usadas,0,sizeof(j->cant_piezas_usadas));
 
     j->puntaje = 0;

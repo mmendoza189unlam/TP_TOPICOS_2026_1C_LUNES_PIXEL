@@ -231,7 +231,7 @@
 	"GBT/gbt.h"
 	<string.h>
 
-1779590241 source:c:\users\camila\desktop\juego\main.c
+1779593328 source:c:\users\camila\desktop\juego\main.c
 	<stdio.h>
 	<stdlib.h>
 	<time.h>
@@ -243,7 +243,7 @@
 	"alfabeto.h"
 	"texto.h"
 
-1779592319 c:\users\camila\desktop\juego\tetris.h
+1779593293 c:\users\camila\desktop\juego\tetris.h
 	<stdint.h>
 	"GBT/gbt.h"
 
@@ -254,7 +254,7 @@
 1779562874 c:\users\camila\desktop\juego\texto.h
 	"alfabeto.h"
 
-1779587589 source:c:\users\camila\desktop\juego\tetris.c
+1779593291 source:c:\users\camila\desktop\juego\tetris.c
 	"tetris.h"
 	<stdlib.h>
 	<string.h>

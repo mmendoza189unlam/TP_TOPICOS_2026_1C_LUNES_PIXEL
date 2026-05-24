@@ -45,13 +45,13 @@ typedef struct {
 
 // Estructura principal que mantiene el estado completo del juego
 typedef struct {
-    uint8_t tablero[ALTO_TABLERO][ANCHO_TABLERO]; // Estado actual de la cuadrícula
+    uint8_t* tablero[ALTO_TABLERO];
     uint8_t piezas[CANT_PIEZAS][4][4];            // Representación de las piezas
 
     int estado;                                   // Estado actual de la máquina
     int puntaje;                                  // Puntuación acumulada
     int lineas_totales;                           //Cantidad de lineas completadas
-    int nivel;                                     //Nivel en el q e encuentra el usuario
+    int nivel;                                    // Nivel en el q e encuentra el usuario
 
     int pieza_actual;                             // Índice de la pieza en juego
     int siguiente;                                // Índice de la próxima pieza

@@ -261,6 +261,14 @@ int main(int argc, char* argv[]) {
     if (timer_visual) gbt_temporizador_destruir(timer_visual);
     if (juego.timer_fijacion) gbt_temporizador_destruir(juego.timer_fijacion);
 
+    //Liberacion de memoria de las filas
+    for (int y = 0; y < ALTO_TABLERO; y++) {
+        if (juego.tablero[y] != NULL) {
+            free(juego.tablero[y]);
+        }
+    }
+
+
     gbt_cerrar();
     return 0;
 }
