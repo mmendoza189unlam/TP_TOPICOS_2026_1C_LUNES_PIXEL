@@ -1,0 +1,187 @@
+# depslib dependency file v1.0
+1779510834 source:c:\users\david 2025\tp_topicos_2026_1c_lunes_pixel\pixeltetris\config.c
+	"config.h"
+	"graficos.h"
+	"tetris.h"
+	"GBT/gbt.h"
+	<stdio.h>
+
+1779520511 source:c:\users\david 2025\tp_topicos_2026_1c_lunes_pixel\pixeltetris\render.c
+	"render.h"
+	"dibujos.h"
+	"GBT/gbt.h"
+	"Alfabeto.h"
+	"Texto.h"
+
+1779513689 source:c:\users\david 2025\tp_topicos_2026_1c_lunes_pixel\pixeltetris\tetris.c
+	"tetris.h"
+	<stdlib.h>
+	<string.h>
+
+1779511230 source:c:\users\david 2025\tp_topicos_2026_1c_lunes_pixel\pixeltetris\graficos.c
+	"graficos.h"
+	<stdio.h>
+	<string.h>
+
+1779511326 c:\users\david 2025\tp_topicos_2026_1c_lunes_pixel\pixeltetris\graficos.h
+	<stdint.h>
+	<GBT/gbt.h>
+
+1777084092 c:\users\david 2025\biblioteca-tp\libgbt-dist\release\gbt_v2026.1c.01\include\gbt\gbt.h
+	"gbt_entrada.h"
+	"gbt_graficos.h"
+	"gbt_logger.h"
+	"gbt_temporizador.h"
+	"gbt_vector.h"
+
+1777084092 c:\users\david 2025\biblioteca-tp\libgbt-dist\release\gbt_v2026.1c.01\include\gbt\gbt_entrada.h
+	<stdint.h>
+
+1777084092 c:\users\david 2025\biblioteca-tp\libgbt-dist\release\gbt_v2026.1c.01\include\gbt\gbt_graficos.h
+	<stdint.h>
+
+1777084092 c:\users\david 2025\biblioteca-tp\libgbt-dist\release\gbt_v2026.1c.01\include\gbt\gbt_logger.h
+
+1777084092 c:\users\david 2025\biblioteca-tp\libgbt-dist\release\gbt_v2026.1c.01\include\gbt\gbt_temporizador.h
+	<stdint.h>
+
+1777084092 c:\users\david 2025\biblioteca-tp\libgbt-dist\release\gbt_v2026.1c.01\include\gbt\gbt_vector.h
+	<stdlib.h>
+	<stdint.h>
+
+1779510600 c:\users\david 2025\tp_topicos_2026_1c_lunes_pixel\pixeltetris\config.h
+
+1779521134 c:\users\david 2025\tp_topicos_2026_1c_lunes_pixel\pixeltetris\tetris.h
+	<stdint.h>
+
+1779517503 source:c:\users\david 2025\tp_topicos_2026_1c_lunes_pixel\pixeltetris\main.c
+	<stdio.h>
+	<stdlib.h>
+	<time.h>
+	<string.h>
+	<ctype.h>
+	"GBT/gbt.h"
+	"tetris.h"
+	"render.h"
+	"alfabeto.h"
+	"texto.h"
+
+1779520701 c:\users\david 2025\tp_topicos_2026_1c_lunes_pixel\pixeltetris\render.h
+	"Alfabeto.h"
+	"tetris.h"
+
+1779512351 source:c:\users\david 2025\tp_topicos_2026_1c_lunes_pixel\pixeltetris\dibujos.c
+	"dibujos.h"
+	<stdio.h>
+	<string.h>
+
+1779512329 c:\users\david 2025\tp_topicos_2026_1c_lunes_pixel\pixeltetris\dibujos.h
+	<stdint.h>
+	<GBT/gbt.h>
+
+1779517467 c:\users\david 2025\tp_topicos_2026_1c_lunes_pixel\pixeltetris\alfabeto.h
+	"letra.h"
+
+1779515870 c:\users\david 2025\tp_topicos_2026_1c_lunes_pixel\pixeltetris\letra.h
+	<stdint.h>
+	"dibujos.h"
+
+1779521412 c:\users\david 2025\tp_topicos_2026_1c_lunes_pixel\pixeltetris\texto.h
+	"alfabeto.h"
+
+1779516179 source:c:\users\david 2025\tp_topicos_2026_1c_lunes_pixel\pixeltetris\letra.c
+	"Letra.h"
+	"GBT/gbt.h"
+	<string.h>
+
+1779516215 source:c:\users\david 2025\tp_topicos_2026_1c_lunes_pixel\pixeltetris\texto.c
+	"Texto.h"
+
+1779519225 source:c:\users\david 2025\tp_topicos_2026_1c_lunes_pixel\pixeltetris\alfabeto.c
+	"Alfabeto.h"
+
+1779562874 source:c:\users\camila\desktop\mica\practica-topicos\juego\alfabeto.c
+	"Alfabeto.h"
+
+1779562874 c:\users\camila\desktop\mica\practica-topicos\juego\alfabeto.h
+	"letra.h"
+
+1779562874 c:\users\camila\desktop\mica\practica-topicos\juego\letra.h
+	<stdint.h>
+	"dibujos.h"
+
+1779587291 c:\users\camila\desktop\mica\practica-topicos\juego\dibujos.h
+	<stdint.h>
+	<GBT/gbt.h>
+
+1779587274 source:c:\users\camila\desktop\mica\practica-topicos\juego\dibujos.c
+	"dibujos.h"
+	<stdio.h>
+	<string.h>
+
+1779562874 source:c:\users\camila\desktop\mica\practica-topicos\juego\letra.c
+	"Letra.h"
+	"GBT/gbt.h"
+	<string.h>
+
+1779590241 source:c:\users\camila\desktop\mica\practica-topicos\juego\main.c
+	<stdio.h>
+	<stdlib.h>
+	<time.h>
+	<string.h>
+	<ctype.h>
+	"GBT/gbt.h"
+	"tetris.h"
+	"render.h"
+	"alfabeto.h"
+	"texto.h"
+
+1779588684 c:\users\camila\desktop\mica\practica-topicos\juego\tetris.h
+	<stdint.h>
+	"GBT/gbt.h"
+
+1779562874 c:\users\camila\desktop\mica\practica-topicos\juego\render.h
+	"Alfabeto.h"
+	"tetris.h"
+
+1779562874 c:\users\camila\desktop\mica\practica-topicos\juego\texto.h
+	"alfabeto.h"
+
+1779589674 source:c:\users\camila\desktop\mica\practica-topicos\juego\render.c
+	<string.h>
+	"render.h"
+	"dibujos.h"
+	"GBT/gbt.h"
+	"Alfabeto.h"
+	"Texto.h"
+
+1779587589 source:c:\users\camila\desktop\mica\practica-topicos\juego\tetris.c
+	"tetris.h"
+	<stdlib.h>
+	<string.h>
+
+1779562874 source:c:\users\camila\desktop\mica\practica-topicos\juego\texto.c
+	"Texto.h"
+
+1777775235 c:\users\camila\desktop\mica\practica-topicos\juego\gbt_v2026.1c.01\include\gbt\gbt.h
+	"gbt_entrada.h"
+	"gbt_graficos.h"
+	"gbt_logger.h"
+	"gbt_temporizador.h"
+	"gbt_vector.h"
+
+1777775235 c:\users\camila\desktop\mica\practica-topicos\juego\gbt_v2026.1c.01\include\gbt\gbt_entrada.h
+	<stdint.h>
+
+1777775235 c:\users\camila\desktop\mica\practica-topicos\juego\gbt_v2026.1c.01\include\gbt\gbt_graficos.h
+	<stdint.h>
+
+1777775235 c:\users\camila\desktop\mica\practica-topicos\juego\gbt_v2026.1c.01\include\gbt\gbt_logger.h
+
+1777775235 c:\users\camila\desktop\mica\practica-topicos\juego\gbt_v2026.1c.01\include\gbt\gbt_temporizador.h
+	<stdint.h>
+
+1777775235 c:\users\camila\desktop\mica\practica-topicos\juego\gbt_v2026.1c.01\include\gbt\gbt_vector.h
+	<stdlib.h>
+	<stdint.h>
+

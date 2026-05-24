@@ -1,461 +1,299 @@
+/*
+Apellido: Mendoza, Micaela Belen
+DNI: 45778189
+Usuario: mmendoza189unlam
+Entrega: Sí
+
+Apellido: Vega, Villalba Ariel
+DNI: 32865933
+Usuario: arielvegav13
+Entrega: Sí
+
+Apellido: Aguirre, Camila Luciana
+DNI: 46183931
+Usuario: Cami-2901
+Entrega: Sí
+
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <stdint.h>
 #include <string.h>
-#include "dibujos.h"
+#include <ctype.h>
 #include "GBT/gbt.h"
+#include "tetris.h"
+#include "render.h"
+#include "alfabeto.h"
+#include "texto.h"
 
-#define ANCHO_VENTANA 120
-#define ALTO_VENTANA 160
-#define ESCALA_VENTANA 5
+#define PARAMETROS_TOTAL 3
+#define EXITO 0
+#define ERROR 1
 
-#define ANCHO_TABLERO 10
-#define ALTO_VISIBLE 20
-#define FILAS_OCULTAS 4
-#define ALTO_TABLERO (ALTO_VISIBLE + FILAS_OCULTAS)
+// Variables globales para configuración, estado del juego y temporizadores
+Configuracion config;
+t_tetris juego;
+tGBT_Temporizador* timer;
+tGBT_Temporizador* timer_visual;
+int opcion_menu = 0;
 
-#define CANT_PIEZAS 7
+int leerArgumentos(int argc, char* argv[], int* ancho, int* alto, int* escala_ventana);
 
-#define TIEMPO_GRACIA 1.0 //Para la fijacion, puse 1.0 para q sea literalmente  el 50% de la velocidad
-
-uint8_t tablero[ALTO_TABLERO][ANCHO_TABLERO] = {0};
-
-/// BLOQUES VISUALES
-const uint8_t bloque[7][8][8] = {
-    {{C,C,C,C,C,C,C,C},{C,C,C,C,C,C,C,C},{C,C,C,C,C,C,C,C},{C,C,C,C,C,C,C,C},{C,C,C,C,C,C,C,C},{C,C,C,C,C,C,C,C},{C,C,C,C,C,C,C,C},{C,C,C,C,C,C,C,C}},
-    {{A,A,A,A,A,A,A,A},{A,A,A,A,A,A,A,A},{A,A,A,A,A,A,A,A},{A,A,A,A,A,A,A,A},{A,A,A,A,A,A,A,A},{A,A,A,A,A,A,A,A},{A,A,A,A,A,A,A,A},{A,A,A,A,A,A,A,A}},
-    {{V,V,V,V,V,V,V,V},{V,V,V,V,V,V,V,V},{V,V,V,V,V,V,V,V},{V,V,V,V,V,V,V,V},{V,V,V,V,V,V,V,V},{V,V,V,V,V,V,V,V},{V,V,V,V,V,V,V,V},{V,V,V,V,V,V,V,V}},
-    {{A,A,A,A,A,A,A,A},{A,A,A,A,A,A,A,A},{A,A,A,A,A,A,A,A},{A,A,A,A,A,A,A,A},{A,A,A,A,A,A,A,A},{A,A,A,A,A,A,A,A},{A,A,A,A,A,A,A,A},{A,A,A,A,A,A,A,A}},
-    {{C,C,C,C,C,C,C,C},{C,C,C,C,C,C,C,C},{C,C,C,C,C,C,C,C},{C,C,C,C,C,C,C,C},{C,C,C,C,C,C,C,C},{C,C,C,C,C,C,C,C},{C,C,C,C,C,C,C,C},{C,C,C,C,C,C,C,C}},
-    {{V,V,V,V,V,V,V,V},{V,V,V,V,V,V,V,V},{V,V,V,V,V,V,V,V},{V,V,V,V,V,V,V,V},{V,V,V,V,V,V,V,V},{V,V,V,V,V,V,V,V},{V,V,V,V,V,V,V,V},{V,V,V,V,V,V,V,V}},
-    {{A,A,A,A,A,A,A,A},{A,A,A,A,A,A,A,A},{A,A,A,A,A,A,A,A},{A,A,A,A,A,A,A,A},{A,A,A,A,A,A,A,A},{A,A,A,A,A,A,A,A},{A,A,A,A,A,A,A,A},{A,A,A,A,A,A,A,A}}
-};
-
-const uint8_t piezas_orig[CANT_PIEZAS][4][4] = {
-    {{0,0,0,0},{1,1,1,1},{0,0,0,0},{0,0,0,0}},
-    {{1,1,0,0},{1,1,0,0},{0,0,0,0},{0,0,0,0}},
-    {{0,1,0,0},{1,1,1,0},{0,0,0,0},{0,0,0,0}},
-    {{0,1,1,0},{1,1,0,0},{0,0,0,0},{0,0,0,0}},
-    {{1,1,0,0},{0,1,1,0},{0,0,0,0},{0,0,0,0}},
-    {{1,0,0,0},{1,1,1,0},{0,0,0,0},{0,0,0,0}},
-    {{0,0,1,0},{1,1,1,0},{0,0,0,0},{0,0,0,0}}
-};
-
-// Copia mutable que se modifica al rotar
-uint8_t piezas[CANT_PIEZAS][4][4];
-
-int game_over = 0;
-int puntaje = 0;
-int pieza_actual, posX, posY;
-int siguiente;
-int bag[7], bag_index=0;
-
-//variables globales --> aceleracion
-int contador_fichas = 0;       // Cant de piezas q se han fijado
-float intervalo_actual = 1000; //Lo pongo aca por si queres en un futuro agregar uno q muestre la velocidad al usuario
-
-//variables globales --> fijacion
-tGBT_Temporizador* timer_fijacion = NULL;
-int en_espera_fijacion = 0;
-
-void mezclar_bag(){
-    for(int i=0;i<7;i++) bag[i]=i;
-    for(int i=6;i>0;i--){      // <-- empieza desde el final
-        int j=rand()%(i+1);    // <-- rango se achica cada iteración
-        int t=bag[i];bag[i]=bag[j];bag[j]=t;
+// Guarda las preferencias del usuario en el archivo de configuración
+void guardar_config() {
+    FILE* f = fopen(ARCHIVO_CONFIG, "wb");
+    if (f) {
+        fwrite(&config, sizeof(Configuracion), 1, f);
+        fclose(f);
     }
-    bag_index=0;
 }
 
-int siguiente_pieza(){
-    if(bag_index>=7) mezclar_bag();
-    return bag[bag_index++];
-}
-
-int colisiona(uint8_t p[4][4], int x, int y){
-    for(int i=0;i<4;i++)
-        for(int j=0;j<4;j++)
-            if(p[i][j]){
-                int tx=x+j, ty=y+i;
-                if(tx<0||tx>=ANCHO_TABLERO||ty>=ALTO_TABLERO) return 1;
-                if(ty>=0 && tablero[ty][tx]) return 1;
-            }
-    return 0;
-}
-
-//Modifique lo de ROTAR para q se pueda hacer tanto de izq como derecha
-void rotarDerecha(uint8_t out[4][4], uint8_t in[4][4]){
-    for(int i=0;i<4;i++)
-        for(int j=0;j<4;j++)
-            out[j][3-i]=in[i][j];
-}
-//Agregue esta para q se pueda hacer de izq
-void rotarIzq(uint8_t out[4][4], uint8_t in[4][4]){
-    for(int i=0;i<4;i++)
-        for(int j=0;j<4;j++)
-            out[3-j][i]=in[i][j];
-}
-
-//Tambien modifique aca, porque antes devolvia un void. Lo hice porque necesito para evitar un bug para la fijacion
-int intentar_rotar(int haciaDerecha){
-    uint8_t tmp[4][4];
-    //Es una band q si quiero q rote a la derecha es 1, pero si se quiere rotar a la derecha es 0
-    if(haciaDerecha){
-        rotarDerecha(tmp, piezas[pieza_actual]);
-    } else{
-        rotarIzq(tmp, piezas[pieza_actual]);
-    }
-
-    if(!colisiona(tmp,posX,posY)){
-        memcpy(piezas[pieza_actual], tmp, sizeof(tmp)); //Aplico la rotacion a la pieza
-        return 1; //Exito para la rotacion, es para evitar un bug q se me genero con la fijacion al rotar
-    }
-    return 0; //Fallo
-
-}
-
-void fijar(){
-    for(int i=0;i<4;i++)
-        for(int j=0;j<4;j++)
-            if(piezas[pieza_actual][i][j])
-                tablero[posY+i][posX+j]=pieza_actual+1;
-}
-
-void limpiar(int nivel){
-    int filas = 0;
-    for(int y=0;y<ALTO_TABLERO;y++){
-        int llena=1;
-        for(int x=0;x<ANCHO_TABLERO;x++)
-            if(!tablero[y][x]) llena=0;
-
-        if(llena){
-            for(int yy=y;yy>0;yy--){
-                for(int x=0;x<ANCHO_TABLERO;x++)
-                {
-                    tablero[yy][x]=tablero[yy-1][x];
-                }
-
-            }
-
-            y--;
-            filas++;
+// Carga las preferencias del usuario o establece valores por defecto
+void cargar_config() {
+    FILE* f = fopen(ARCHIVO_CONFIG, "rb");
+    if (f) {
+        fread(&config, sizeof(Configuracion), 1, f);
+        fclose(f);
+        if (config.resolucion != RES_CGA && config.resolucion != RES_VGA) {
+            config.resolucion = RES_CGA;
         }
-    }
-
-    int tabla[] = {0, 100, 300, 500, 800};
-
-    if(filas > 0){
-        int multiplicador=(nivel+1);
-        int bono_velocidad=(nivel)*5; //para aumentar el puntaje segun el nivel
-        int ptos_obtenidos=(tabla[filas]*multiplicador)+bono_velocidad;
-        puntaje += ptos_obtenidos;
-
-        //Para visualizar los cambios
-        printf("[FILAS] Borradas: %d | Multiplicador Nivel: x%d | Bono: +%d | Puntos: +%d\n",filas, multiplicador, bono_velocidad, ptos_obtenidos);
-    }
-}
-
-
-
-void nueva(){
-    pieza_actual = siguiente;
-    siguiente = siguiente_pieza();
-
-    memcpy(piezas[pieza_actual], piezas_orig[pieza_actual], sizeof(piezas[0]));
-
-    posX = 3;
-    posY = 0;
-
-    if(colisiona(piezas[pieza_actual], posX, posY)){
-        game_over = 1;
+        if (config.escala < 1 || config.escala > 6) {
+            config.escala = 2;
+        }
+        if (config.velocidad < 0.1f || config.velocidad > 1.0f) {
+            config.velocidad = 0.5f;
+        }
+        if (config.paleta < 0 || config.paleta > 1) {
+            config.paleta = 0;
+        }
+    } else {
+        config.paleta = 0;
+        config.resolucion = RES_CGA;
+        config.escala = 2;
+        config.velocidad = 0.5f;
     }
 }
 
-void render(){
-    gbt_borrar_backbuffer(0);
+int main(int argc, char* argv[]) {
+    int ancho_ventana, alto_ventana, escala_ventana;
 
-    // Tablero y pieza actual (igual que antes)
-    //Tablero
-    for(int y=FILAS_OCULTAS;y<ALTO_TABLERO;y++)
-        for(int x=0;x<ANCHO_TABLERO;x++)
-            if(tablero[y][x])
-                dibujar(bloque[tablero[y][x]-1],x,y-FILAS_OCULTAS);
-    //Pieza Actual
-    for(int i=0;i<4;i++)
-        for(int j=0;j<4;j++)
-            if(piezas[pieza_actual][i][j]){
-                int dy=posY+i-FILAS_OCULTAS;
-                if(dy>=0)
-                    dibujar(bloque[pieza_actual],posX+j,dy);
-            }
-
-//--PANEL DERECHO--
-
-// Dibujar "SCORE"
-    for(int k = 0; k < 5; k++)
-    for(int ly = 0; ly < 5; ly++)   // ly en lugar de y
-        for(int lx = 0; lx < 3; lx++)  // lx en lugar de x
-            if(letras_score[k][ly][lx])
-                gbt_dibujar_pixel(84 + k*(ANCHO_DIGITO+1) + lx, 2 + ly, A);  // 2 + ly
-
-// Puntaje debajo del texto (solo una vez)
-// Panel de puntaje (a la derecha, desde x=82)
-// Etiqueta "SC" en píxeles (simplificado, podés expandirlo)
-    dibujar_numero(puntaje, 84, 10, A);// color amarillo
-//Aqui modifique porque estaba repetido
-
-// Dibujar "NEXT"
-    for(int k = 0; k < 4; k++)
-    for(int ly = 0; ly < 5; ly++)
-        for(int lx = 0; lx < 3; lx++)
-            if(letras_next[k][ly][lx])
-                gbt_dibujar_pixel(84 + k*(ANCHO_DIGITO+1) + lx, 30 + ly, A);
-
-// Dibujar preview de siguiente pieza
-    for(int i=0;i<4;i++)
-        for(int j=0;j<4;j++)
-            if(piezas_orig[siguiente][i][j]){
-                // posición fija en panel derecho
-                dibujar(bloque[siguiente], 11 + j, 6 + i);
-            }
-
-//Dibujar "LEVEL"
-    for(int k = 0; k < 5; k++)
-        for(int ly = 0; ly < 5; ly++)
-            for(int lx = 0; lx < 3; lx++)
-                if(letras_level[k][ly][lx])
-                    gbt_dibujar_pixel(84 + k*(ANCHO_DIGITO+1) + lx, 100 + ly, V);
-
-//Dibujar el numero de level
-    int level = contador_fichas / 10;
-    dibujar_numero_ceros(level, 84, 108, V);
-
-    int baseX = 0;
-    int baseY = 0;
-
-    int ancho_px = ANCHO_TABLERO * PIXELES_X_LADO;
-    int alto_px  = ALTO_VISIBLE * PIXELES_X_LADO;
-
-// Línea superior e inferior
-    for(int x = 0; x < ancho_px; x++){
-        gbt_dibujar_pixel(baseX + x, baseY, V); // arriba
-        gbt_dibujar_pixel(baseX + x, baseY + alto_px - 1, V); // abajo
+    // Validación de parámetros desde la línea de comandos
+    if (leerArgumentos(argc, argv, &ancho_ventana, &alto_ventana, &escala_ventana) == ERROR) {
+        return ERROR;
     }
-
-// Línea izquierda y derecha
-    for(int y = 0; y < alto_px; y++){
-        gbt_dibujar_pixel(baseX, baseY + y, V); // izquierda
-        gbt_dibujar_pixel(baseX + ancho_px - 1, baseY + y, V); // derecha
-    }
-}
-
-//Aceleracion
-void actualizar_dificultad(tGBT_Temporizador** timer, int* cont, float* intervalo) {
-    (*cont)++;
-    if ((*cont) % 10 == 0) { // El PDF pide cada 10 fichas
-        (*intervalo) *= 0.97f;
-
-        gbt_temporizador_destruir(*timer);
-        *timer = gbt_temporizador_crear((*intervalo) / 1000.0f);
-
-        printf("Dificultad aumentada! Nuevo intervalo: %.2f s\n", (*intervalo) / 1000.0f); //Te avisa del nuevo intervalo
-    }
-}
-
-int main(){
 
     srand(time(0));
-
-    //Le agregue aca la "verificacion" de q se haya ejecutado bien, tanto al iniciar como cuando abre la ventana
+    //Verificacion de se haya ejecutado bien
     if (gbt_iniciar() != 0) {
         fprintf(stderr, "Error al iniciar GBT: %s\n", gbt_obtener_log());
         return -1;
     }
+    cargar_config();
 
-    if (gbt_crear_ventana("Tetris",ANCHO_VENTANA,ALTO_VENTANA,ESCALA_VENTANA) != 0) {
-        fprintf(stderr, "Error al iniciar el modulo de graficos de GBT: %s\n", gbt_obtener_log());
-        return -1;
-    }
+    // Actualización de configuración con parámetros recibidos
+    config.escala = escala_ventana;
+    config.resolucion = (ancho_ventana == 640) ? RES_VGA : RES_CGA;
 
-    memcpy(piezas, piezas_orig, sizeof(piezas_orig));  // ← primero
-    mezclar_bag();
-    siguiente = siguiente_pieza(); // preload
-    nueva();
-    tGBT_Temporizador* timer = gbt_temporizador_crear(0.5); //Timer de gravedad
-    timer_fijacion = NULL; // Empezamos sin timer de fijación
-    int delay_mov = 0;
+    aplicar_paleta(config.paleta);
+    recrear_ventana(&config);
 
+    // Inicialización de componentes gráficos
+    Alfabeto alf;
+    alfabetoCrear(&alf);
 
-    while(!game_over){
+    // Configuración del estado inicial del juego
+    memset(&juego, 0, sizeof(t_tetris));
+    juego.mostrar_press = 1;
+    juego.mostrar_cursor = 1;
+    juego.estado = ESTADO_PRESENTACION;
 
-        //INPUTS
+    timer = gbt_temporizador_crear(config.velocidad);
+    timer_visual = gbt_temporizador_crear(0.5);
+
+    // Bucle principal
+    while (1) {
         gbt_procesar_entrada();
-        //variable --> limpiar, es para a mayor velocidad, mayor los puntos obtenidos
-        int nivel= contador_fichas/10;
+        eGBT_Tecla tecla = gbt_obtener_tecla_presionada();
 
-        // IZQUIERDA
-        if(gbt_tecla_presionada(GBTK_IZQUIERDA)){
-            posX--;
-            if(colisiona(piezas[pieza_actual], posX, posY)){
-               posX++;
-            }else {
-                // RESET DE TOLERANCIA (fijacion)
-                if(en_espera_fijacion) {
-                    en_espera_fijacion = 0;
-                    if(timer_fijacion) {
-                        gbt_temporizador_destruir(timer_fijacion);
-                        timer_fijacion = NULL;
-                    }
+        // Control de parpadeo para elementos visuales
+        if (gbt_temporizador_consumir(timer_visual)) {
+            juego.mostrar_press = !juego.mostrar_press;
+            juego.mostrar_cursor = !juego.mostrar_cursor;
+        }
+
+        // --- Lógica de estados ---
+
+        // Teclas globales válidas en estados activos de juego o menús
+        if (juego.estado == ESTADO_JUGANDO || juego.estado == ESTADO_PAUSA || juego.estado == ESTADO_GAMEOVER) {
+            // Si aprieta N, inicia un NUEVO JUEGO directamente
+            if (tecla == GBTK_n) {
+                tetris_reiniciar(&juego);
+                gbt_temporizador_destruir(timer);
+                timer = gbt_temporizador_crear(config.velocidad);
+                juego.estado = ESTADO_JUGANDO;
+            }
+            // Si aprieta M, vuelve al MENÚ de configuración
+            if (tecla == GBTK_m) {
+                juego.estado = ESTADO_MENU;
+            }
+        }
+
+        if (juego.estado == ESTADO_PRESENTACION) {
+            if (tecla == GBTK_ESCAPE) {
+                break;
+            }
+            if (tecla == GBTK_ENTER) {
+                juego.estado = ESTADO_INGRESO_NOMBRE;
+            }
+        } else {
+            if (juego.estado == ESTADO_INGRESO_NOMBRE) {
+                if (tecla == GBTK_ESCAPE) {
+                    break;
                 }
-            }
-        }
-
-        // DERECHA
-        if(gbt_tecla_presionada(GBTK_DERECHA)){
-            posX++;
-            if(colisiona(piezas[pieza_actual], posX, posY)){
-                posX--;
-            }else {
-                // RESET DE TOLERANCIA
-                if(en_espera_fijacion) {
-                    en_espera_fijacion = 0;
-                    if(timer_fijacion) {
-                        gbt_temporizador_destruir(timer_fijacion);
-                        timer_fijacion = NULL;
-                    }
+                // Captura de teclas para nombre de usuario
+                if (tecla >= GBTK_a && tecla <= GBTK_z && juego.nombre_len < 12) {
+                    juego.nombre_jugador[juego.nombre_len] = 'A' + (tecla - GBTK_a);
+                    juego.nombre_len++;
+                    juego.nombre_jugador[juego.nombre_len] = '\0';
                 }
-            }
-        }
-
-        // ABAJO (1 paso por toque) - Soft Drop
-        if(gbt_tecla_presionada(GBTK_ABAJO)){
-            posY++;
-            if(colisiona(piezas[pieza_actual], posX, posY)){
-                posY--;
-            } else {
-                int ptos_bajar= 1+(nivel*5);
-                puntaje += ptos_bajar; //Para el aumento de puntaje segun el nivel
-                // Si baja con éxito, reseteamos la espera
-                if(en_espera_fijacion) {
-                    en_espera_fijacion = 0;
-                    if(timer_fijacion) {
-                        gbt_temporizador_destruir(timer_fijacion);
-                        timer_fijacion = NULL;
-                    }
+                if (tecla == GBTK_RETROCESO && juego.nombre_len > 0) {
+                    juego.nombre_len--;
+                    juego.nombre_jugador[juego.nombre_len] = '\0';
                 }
-
-                //Para visualizar los cambios
-                printf("[SOFT DROP] Puntos: +%d | Total: %d\n", ptos_bajar, puntaje);
-            }
-        }
-
-        // ROTAR
-        //Lo modifique para q se pueda rotar en ambos sentidos (izq y derecha)
-        //ROTAR DERECHA
-        if(gbt_tecla_presionada(GBTK_ARRIBA)){
-            if(intentar_rotar(1)){
-                //Le agrego el RESET de la fijacion
-                en_espera_fijacion = 0;
-                if(timer_fijacion) {
-                    gbt_temporizador_destruir(timer_fijacion);
-                    timer_fijacion = NULL;
-                }
-            }
-        }
-
-        //ROTAR IZQUIERDA
-        if (gbt_tecla_presionada(GBTK_z)){ //Puse que se pueda modificar para la izquierda con la tecla Z, pero va  a ser mejor q sea con otra tecla
-            if (intentar_rotar(0)){
-                //Le agrego el RESET de la fijacion
-                en_espera_fijacion = 0;
-                if(timer_fijacion) {
-                    gbt_temporizador_destruir(timer_fijacion);
-                    timer_fijacion = NULL;
-                }
-            }
-        }
-
-
-        // HARD DROP (ESPACIO)
-        if(gbt_tecla_presionada(GBTK_ESPACIO)){
-            int celdas_caidas=0;
-            while(!colisiona(piezas[pieza_actual], posX, posY)){
-                posY++;
-                celdas_caidas++;
-            }
-            int ptos_drop=celdas_caidas*(2+nivel);
-            puntaje += ptos_drop; //Para el aumento de puntaje segun el nivel
-            posY--;
-
-            //Para visualizar el cambio
-            printf("[HARD DROP] Celdas: %d | Puntos: +%d\n", celdas_caidas, ptos_drop);
-
-            fijar();
-            limpiar(nivel); //modifico para el aumento segun el nivel
-
-            //Agregué esto para que las piezas de espacio también sumen al contador
-            actualizar_dificultad(&timer, &contador_fichas, &intervalo_actual);
-
-            nueva();
-
-            //Cancelo cualquier espera de fijacion
-            en_espera_fijacion = 0;
-            if(timer_fijacion) { gbt_temporizador_destruir(timer_fijacion); timer_fijacion = NULL; }
-        }
-
-        // SALIR
-        if(gbt_tecla_presionada(GBTK_ESCAPE)){
-            break;
-        }
-
-        //GRAVEDAD Y FIJACION
-
-        // LÓGICA DE CAÍDA Y TOLERANCIA
-        if(gbt_temporizador_consumir(timer)){
-            if(!colisiona(piezas[pieza_actual], posX, posY + 1)){
-                posY++;
-                // Si la pieza bajó, cancelamos la espera porque ya no está "trabada"
-                if(en_espera_fijacion) {
-                    en_espera_fijacion = 0;
-                    if(timer_fijacion) { gbt_temporizador_destruir(timer_fijacion); timer_fijacion = NULL; }
+                if (tecla == GBTK_ENTER && juego.nombre_len > 0) {
+                    juego.estado = ESTADO_MENU;
                 }
             } else {
-                // TOCÓ SUELO: Iniciamos la tolerancia si no estaba ya activa
-                if(!en_espera_fijacion){
-                    en_espera_fijacion = 1;
-                    timer_fijacion = gbt_temporizador_crear(TIEMPO_GRACIA);
+                if (juego.estado == ESTADO_MENU) {
+                    // Gestión del menú de configuración
+                    if (gbt_tecla_presionada(GBTK_ESCAPE)) {
+                        break;
+                    }
+                    if (gbt_tecla_presionada(GBTK_ABAJO)) {
+                        opcion_menu = (opcion_menu + 1) % 5;
+                    }
+                    if (gbt_tecla_presionada(GBTK_ARRIBA)) {
+                        opcion_menu = (opcion_menu - 1 + 5) % 5;
+                    }
+                    // Modificación de configuración con flecha derecha
+                    if (gbt_tecla_presionada(GBTK_DERECHA)) {
+                        switch (opcion_menu) {
+                            case 0: config.paleta = !config.paleta; aplicar_paleta(config.paleta); break;
+                            case 1: config.resolucion = (config.resolucion == RES_CGA) ? RES_VGA : RES_CGA; recrear_ventana(&config); break;
+                            case 2: config.escala = (config.escala == 1) ? 2 : 1; recrear_ventana(&config); break;
+                            case 3: config.velocidad = (config.velocidad == 1.0f) ? 0.5f : (config.velocidad == 0.5f) ? 0.2f : 1.0f; timer = gbt_temporizador_crear(config.velocidad); break;
+                        }
+                        guardar_config();
+                    }
+                    if (gbt_tecla_presionada(GBTK_ENTER) && opcion_menu == 4) {
+                        tetris_reiniciar(&juego);
+                        // Modifica el temporizador base respetando la velocidad elegida en el menú de opciones
+                        gbt_temporizador_destruir(timer);
+                        timer = gbt_temporizador_crear(config.velocidad);
+                        juego.estado = ESTADO_JUGANDO;
+                    }
+                } else {
+                    if (juego.estado == ESTADO_PAUSA) {
+                        if (gbt_tecla_presionada(GBTK_p)) {
+                            juego.estado = ESTADO_JUGANDO;
+                        }
+                    } else {
+                        if (juego.estado == ESTADO_GAMEOVER) {
+                            if (gbt_tecla_presionada(GBTK_ENTER)) {
+                                tetris_reiniciar(&juego);
+
+                                gbt_temporizador_destruir(timer);
+                                timer = gbt_temporizador_crear(config.velocidad);
+                                juego.estado = ESTADO_JUGANDO;
+                            }
+                            if (gbt_tecla_presionada(GBTK_ESCAPE)) {
+                                break;
+                            }
+                        } else {
+                            if (juego.estado == ESTADO_JUGANDO) {
+
+                                // Lógica del juego en ejecución
+                                if (gbt_tecla_presionada(GBTK_p)) juego.estado = ESTADO_PAUSA;
+                                if (gbt_tecla_presionada(GBTK_ESCAPE)) break;
+
+                                // Entrada de movimientos lógicos usando la estructura integrada
+                                if (gbt_tecla_presionada(GBTK_IZQUIERDA)) tetris_mover_izq(&juego);
+                                if (gbt_tecla_presionada(GBTK_DERECHA)) tetris_mover_der(&juego);
+                                if (gbt_tecla_presionada(GBTK_ABAJO)) tetris_mover_abajo_manual(&juego);
+                                if (gbt_tecla_presionada(GBTK_ARRIBA)) tetris_rotar_der(&juego);
+                                if (gbt_tecla_presionada(GBTK_w)) tetris_rotar_izq(&juego);
+                                if (gbt_tecla_presionada(GBTK_ESPACIO)) tetris_hard_drop(&juego);
+
+                                //Guarda el nivel antes de procesar la grevedad
+                                int nivel_previo = juego.nivel;
+
+                                // Lógica del motor de gravedad y el sistema Lock Delay
+                                tetris_procesar_gravedad(&juego, timer);
+
+                                if (juego.nivel != nivel_previo) {
+                                    float multiplicador_velocidad = juego.intervalo_actual / 1000.0f;
+
+                                    if (timer) {
+                                        gbt_temporizador_destruir(timer);
+                                    }
+                                    // Se crea el nuevo timer con la velocidad acelerada del nuevo nivel
+                                    timer = gbt_temporizador_crear(config.velocidad * multiplicador_velocidad);
+                                }
+
+                            }
+                        }
+                    }
                 }
             }
         }
 
-        //VERIFICACIÓN DE FIJACIÓN (Lock Delay)
-        // Ponlo justo debajo de la gravedad
-        if(en_espera_fijacion && timer_fijacion != NULL){
-            if(gbt_temporizador_consumir(timer_fijacion)){
-                fijar();
-                limpiar(nivel);
-                actualizar_dificultad(&timer, &contador_fichas, &intervalo_actual);
-                nueva();
+        // Renderizado del estado actual
+        int ancho_logico, alto_logico;
+        obtener_resolucion_logica(config.resolucion, &ancho_logico, &alto_logico);
+        render_pantalla(&juego, &config, opcion_menu, &alf, ancho_logico, alto_logico);
 
-                en_espera_fijacion = 0;
-                gbt_temporizador_destruir(timer_fijacion);
-                timer_fijacion = NULL;
-            }
-        }
-
-        render();
         gbt_volcar_backbuffer();
         gbt_esperar(16);
     }
 
-    printf("GAME OVER\n");
+    //Liberacion de memoria
+    if (timer) gbt_temporizador_destruir(timer);
+    if (timer_visual) gbt_temporizador_destruir(timer_visual);
+    if (juego.timer_fijacion) gbt_temporizador_destruir(juego.timer_fijacion);
 
-    if(timer_fijacion) gbt_temporizador_destruir(timer_fijacion); //libero mem
-    //Aqui, no estoy muy segura de esto, pero le agregue lo de limpieza de memoria;
-    gbt_temporizador_destruir(timer);
-    gbt_destruir_ventana();
-
-    gbt_cerrar(); // ahora sí se llama correctamente
+    gbt_cerrar();
     return 0;
+}
+
+// Función de validación de argumentos de entrada
+int leerArgumentos(int argc, char* argv[], int* ancho, int* alto, int* escala_ventana) {
+    if (argc != PARAMETROS_TOTAL) {
+        printf("ERROR 1: La cantidad de parametros no es la esperada\n");
+        return ERROR;
+    }
+    char resolucion[4];
+    char escala[2];
+    strcpy(resolucion, argv[1]);
+    strcpy(escala, argv[2]);
+
+    if (strlen(resolucion) != 3 || (strcmpi(resolucion, "VGA") != 0 && strcmpi(resolucion, "CGA") != 0)) {
+        return ERROR;
+    }
+    if (!isdigit(escala[0]) || escala[0] < '1' || escala[0] > '4') {
+        return ERROR;
+    }
+    if (strcmpi(resolucion, "VGA") == 0 && escala[0] > '2') {
+        return ERROR;
+    }
+
+    if (strcmpi(resolucion, "VGA") == 0) {
+        *ancho = 640;
+        *alto = 480;
+    } else {
+        *ancho = 320;
+        *alto = 200;
+    }
+
+    *escala_ventana = escala[0] - '0';
+    return EXITO;
 }
