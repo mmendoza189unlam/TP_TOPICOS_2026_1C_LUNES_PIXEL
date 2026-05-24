@@ -121,8 +121,19 @@ void render_pantalla(t_tetris* juego, Configuracion* config, int opcion_menu, co
     gbt_borrar_backbuffer(0);
 
     //Colores
-    int color_verde = VE;   // Índice 4
-    int color_amarillo = AM; // Índice 2
+
+    int color_uno;
+    int color_dos;
+
+    if(config->paleta==1){
+        //MODO VGA
+        color_uno=RO;
+        color_dos=VE;
+    } else {
+        //MODO RGB
+        color_uno=VE;
+        color_dos=AM;
+    }
 
     int viejo_offsetX = offsetX;
     int viejo_offsetY = offsetY;
@@ -209,21 +220,21 @@ void render_pantalla(t_tetris* juego, Configuracion* config, int opcion_menu, co
 
     // Dibujar marco exterior central
     for (int x = boxCentroX1; x <= boxCentroX2; x++) {
-        gbt_dibujar_pixel(x, boxCentroY1, color_verde);
-        gbt_dibujar_pixel(x, boxCentroY2, color_verde);
+        gbt_dibujar_pixel(x, boxCentroY1, color_uno);
+        gbt_dibujar_pixel(x, boxCentroY2, color_uno);
     }
     for (int y = boxCentroY1; y <= boxCentroY2; y++) {
-        gbt_dibujar_pixel(boxCentroX1, y, color_verde);
-        gbt_dibujar_pixel(boxCentroX2, y, color_verde);
+        gbt_dibujar_pixel(boxCentroX1, y, color_uno);
+        gbt_dibujar_pixel(boxCentroX2, y, color_uno);
     }
     // Línea divisoria interna (Separa LINES del tablero)
     for (int x = boxCentroX1; x <= boxCentroX2; x++) {
-        gbt_dibujar_pixel(x, tableroPxY1 - (2 * escala_dibujo), color_verde);
+        gbt_dibujar_pixel(x, tableroPxY1 - (2 * escala_dibujo), color_uno);
     }
 
     // Textos de LINES
-    dibujar_texto("LINES", boxCentroX1 + (6 * escala_dibujo), boxCentroY1 + (4 * escala_dibujo), color_amarillo);
-    dibujar_numero(juego->lineas_totales, boxCentroX1 + (52 * escala_dibujo), boxCentroY1 + (4 * escala_dibujo), color_amarillo);
+    dibujar_texto("LINES", boxCentroX1 + (6 * escala_dibujo), boxCentroY1 + (4 * escala_dibujo), color_dos);
+    dibujar_numero(juego->lineas_totales, boxCentroX1 + (52 * escala_dibujo), boxCentroY1 + (4 * escala_dibujo), color_dos);
 
     // Dibujar el contenido del tablero lógico
     for (int y = FILAS_OCULTAS; y < ALTO_TABLERO; y++) {
@@ -269,18 +280,18 @@ void render_pantalla(t_tetris* juego, Configuracion* config, int opcion_menu, co
 
     // Dibujar marco exterior izquierdo
     for (int x = boxIzqX1; x <= boxIzqX2; x++) {
-        gbt_dibujar_pixel(x, boxIzqY1, color_verde);
-        gbt_dibujar_pixel(x, boxIzqY2, color_verde);
+        gbt_dibujar_pixel(x, boxIzqY1, color_uno);
+        gbt_dibujar_pixel(x, boxIzqY2, color_uno);
     }
     for (int y = boxIzqY1; y <= boxIzqY2; y++) {
-        gbt_dibujar_pixel(boxIzqX1, y, color_verde);
-        gbt_dibujar_pixel(boxIzqX2, y, color_verde);
+        gbt_dibujar_pixel(boxIzqX1, y, color_uno);
+        gbt_dibujar_pixel(boxIzqX2, y, color_uno);
     }
     // Línea divisoria de STATISTICS
     for (int x = boxIzqX1; x <= boxIzqX2; x++) {
-        gbt_dibujar_pixel(x, tableroPxY1 - (2 * escala_dibujo), color_verde);
+        gbt_dibujar_pixel(x, tableroPxY1 - (2 * escala_dibujo), color_uno);
     }
-    dibujar_texto("STATISTICS", boxIzqX1 + (4 * escala_dibujo), boxIzqY1 + (4 * escala_dibujo), color_amarillo);
+    dibujar_texto("STATISTICS", boxIzqX1 + (4 * escala_dibujo), boxIzqY1 + (4 * escala_dibujo), color_dos);
 
     // Renderizar las 7 piezas fijas apiladas con sus contadores de 3 ceros
     int startY_piezas = boxIzqY1 + (20 * escala_dibujo);
@@ -302,7 +313,7 @@ void render_pantalla(t_tetris* juego, Configuracion* config, int opcion_menu, co
             }
         }
         // Mostrar recuento de piezas usando el array de la estructura con formato de 3 dígitos (000)
-        dibujar_numero_ceros3(juego->cant_piezas_usadas[p], boxIzqX1 + (44 * escala_dibujo), piezaPyY + (6 * escala_dibujo), color_amarillo);
+        dibujar_numero_ceros3(juego->cant_piezas_usadas[p], boxIzqX1 + (44 * escala_dibujo), piezaPyY + (6 * escala_dibujo), color_dos);
     }
 
 
@@ -314,20 +325,20 @@ void render_pantalla(t_tetris* juego, Configuracion* config, int opcion_menu, co
 
     // Dibujar marco exterior derecho
     for (int x = boxDerX1; x <= boxDerX2; x++) {
-        gbt_dibujar_pixel(x, boxDerY1, color_verde);
-        gbt_dibujar_pixel(x, boxDerY2, color_verde);
+        gbt_dibujar_pixel(x, boxDerY1, color_uno);
+        gbt_dibujar_pixel(x, boxDerY2, color_uno);
     }
     for (int y = boxDerY1; y <= boxDerY2; y++) {
-        gbt_dibujar_pixel(boxDerX1, y, color_verde);
-        gbt_dibujar_pixel(boxDerX2, y, color_verde);
+        gbt_dibujar_pixel(boxDerX1, y, color_uno);
+        gbt_dibujar_pixel(boxDerX2, y, color_uno);
     }
 
     // Bloque SCORE
-    dibujar_texto("SCORE", boxDerX1 + (6 * escala_dibujo), boxDerY1 + (6 * escala_dibujo), color_amarillo);
-    dibujar_numero_ceros7(juego->puntaje, boxDerX1 + (6 * escala_dibujo), boxDerY1 + (16 * escala_dibujo), color_amarillo);
+    dibujar_texto("SCORE", boxDerX1 + (6 * escala_dibujo), boxDerY1 + (6 * escala_dibujo), color_dos);
+    dibujar_numero_ceros7(juego->puntaje, boxDerX1 + (6 * escala_dibujo), boxDerY1 + (16 * escala_dibujo), color_dos);
 
     // Bloque NEXT PIECE
-    dibujar_texto("NEXT", boxDerX1 + (6 * escala_dibujo), boxDerY1 + (46 * escala_dibujo), color_amarillo);
+    dibujar_texto("NEXT", boxDerX1 + (6 * escala_dibujo), boxDerY1 + (46 * escala_dibujo), color_dos);
     int previewX = boxDerX1 + (16 * escala_dibujo);
     int previewY = boxDerY1 + (58 * escala_dibujo);
     for (int i = 0; i < 4; i++) {
@@ -343,17 +354,17 @@ void render_pantalla(t_tetris* juego, Configuracion* config, int opcion_menu, co
     }
 
     // Bloque LEVEL
-    dibujar_texto("LEVEL", boxDerX1 + (6 * escala_dibujo), boxDerY1 + (120 * escala_dibujo), color_verde);
-    dibujar_numero_ceros7(juego->nivel, boxDerX1 + (6 * escala_dibujo), boxDerY1 + (130 * escala_dibujo), color_verde);
+    dibujar_texto("LEVEL", boxDerX1 + (6 * escala_dibujo), boxDerY1 + (120 * escala_dibujo), color_uno);
+    dibujar_numero_ceros7(juego->nivel, boxDerX1 + (6 * escala_dibujo), boxDerY1 + (130 * escala_dibujo), color_uno);
 
     //USER NAME
     if (juego->nombre_len > 0) {
-        dibujar_texto(juego->nombre_jugador, boxDerX1 + (6 * escala_dibujo), boxDerY1 + (160 * escala_dibujo), color_amarillo);
+        dibujar_texto(juego->nombre_jugador, boxDerX1 + (6 * escala_dibujo), boxDerY1 + (160 * escala_dibujo), color_dos);
     }
 
     //OVERLAYS DE ESTADOS INTERNOS (PAUSA Y GAMEOVER)
     if (juego->estado == ESTADO_PAUSA) {
-        dibujar_texto("PAUSA", tableroPxX1 + (24 * escala_dibujo), tableroPxY1 + (60 * escala_dibujo), color_amarillo);
+        dibujar_texto("PAUSA", tableroPxX1 + (24 * escala_dibujo), tableroPxY1 + (60 * escala_dibujo), color_dos);
     }
 
     if (juego->estado == ESTADO_GAMEOVER) {
@@ -374,15 +385,15 @@ void render_pantalla(t_tetris* juego, Configuracion* config, int opcion_menu, co
 
         // Calcular posición X para centrar "GAME OVER"
         int x_game_over = centro_tablero_x - ((strlen(txt_game_over) * ancho_letca_px) / 2);
-        dibujar_texto(txt_game_over, x_game_over, tableroPxY1 + (40 * escala_dibujo), color_amarillo);
+        dibujar_texto(txt_game_over, x_game_over, tableroPxY1 + (40 * escala_dibujo), color_dos);
 
         // Calcular posición X para centrar "REINICIAR ENTER"
         int x_reiniciar = centro_tablero_x - ((strlen(txt_reiniciar) * ancho_letca_px) / 2);
-        dibujar_texto(txt_reiniciar, x_reiniciar, tableroPxY1 + (60 * escala_dibujo), color_verde);
+        dibujar_texto(txt_reiniciar, x_reiniciar, tableroPxY1 + (60 * escala_dibujo), color_uno);
 
         // Calcular posición X para centrar "SALIR ESC"
         int x_salir = centro_tablero_x - ((strlen(txt_salir) * ancho_letca_px) / 2);
-        dibujar_texto(txt_salir, x_salir, tableroPxY1 + (76 * escala_dibujo), color_verde);
+        dibujar_texto(txt_salir, x_salir, tableroPxY1 + (76 * escala_dibujo), color_uno);
     }
 
 }
