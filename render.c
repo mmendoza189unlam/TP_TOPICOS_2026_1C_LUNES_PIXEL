@@ -76,13 +76,22 @@ void recrear_ventana(Configuracion* config) {
     obtener_resolucion_logica(config->resolucion, &ancho_logico, &alto_logico);
 
     escala_dibujo = (config->resolucion == RES_CGA) ? 1 : 2;
-
+    //Cálculo del ANCHO REAL total de la interfaz de 3 paneles: Panel Izquierdo (76px) + Margen central izquierdo (4px) + Tablero + Margen central derecho (4px) + Panel Derecho (72px)
+    // Total = ancho_tablero + 156 píxeles a nivel lógico (multiplicado por la escala).
     int ancho_tablero = ANCHO_TABLERO * PIXELES_X_LADO * escala_dibujo;
-    int alto_tablero  = ALTO_VISIBLE * PIXELES_X_LADO * escala_dibujo;
-    int ancho_total = ancho_tablero + 80;
+    int ancho_total_real = ancho_tablero + (156 * escala_dibujo);
 
-    offsetX = (ancho_logico - ancho_total) / 2;
-    offsetY = (alto_logico - alto_tablero) / 2;
+    // Cálculo del ALTO REAL total de la interfaz: El "boxCentro" va desde offsetY hasta [tableroPxY2 + 4*escala]
+    // Esto es equivalente a: alto_tablero + 12*escala (espacio LINES) + 4*escala (margen inferior)
+    // Total = alto_tablero + 16 píxeles a nivel lógico (multiplicado por la escala).
+    int alto_tablero  = ALTO_VISIBLE * PIXELES_X_LADO * escala_dibujo;
+    int alto_total_real = alto_tablero + (16 * escala_dibujo);
+
+    // Centrado matemático perfecto basado en las dimensiones reales ocupadas
+    offsetX = (ancho_logico - ancho_total_real) / 2 + (76 * escala_dibujo);
+    // Sumamos (76 * escala_dibujo) porque el render_pantalla toma a 'offsetX' como la coordenada X del TABLERO, no del borde izquierdo de la pantalla.
+
+    offsetY = (alto_logico - alto_total_real) / 2;
 
     gbt_destruir_ventana();
     gbt_crear_ventana("Tetris", ancho_logico, alto_logico, config->escala);
