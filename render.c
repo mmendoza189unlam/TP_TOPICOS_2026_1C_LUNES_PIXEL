@@ -136,7 +136,7 @@ static void dibujarRecuadro(int ancho, int alto, int escala) {
 }
 
 /* Función principal de renderizado: controla el dibujo basado en el estado del juego */
-void render_pantalla(t_tetris* juego, Configuracion* config, int opcion_menu, const Alfabeto* alf, int ancho_logico, int alto_logico) {
+void render_pantalla(t_tetris* juego, Configuracion* config, int opcion_menu, const Alfabeto* alf, int ancho_logico, int alto_logico, const char* mejor_jugador, int max_score) {
     gbt_borrar_backbuffer(0);
 
     //Colores
@@ -387,20 +387,17 @@ void render_pantalla(t_tetris* juego, Configuracion* config, int opcion_menu, co
     // --- ESTADÍSTICA DE JUEGO POR PREFERENCIA DE NOMBRE ---
     if (juego->nombre_len > 0) {
         // 1. Mostrar el Nombre del Jugador Actual
-        dibujar_texto("PLAYER", boxDerX1 + (6 * escala_dibujo), boxDerY1 + (130 * escala_dibujo), color_uno);
-        dibujar_texto(juego->nombre_jugador, boxDerX1 + (6 * escala_dibujo), boxDerY1 + (140 * escala_dibujo), color_dos);
+        dibujar_texto("PLAYER", boxDerX1 + (6 * escala_dibujo), boxDerY1 + (124 * escala_dibujo), color_uno);
+        dibujar_texto(juego->nombre_jugador, boxDerX1 + (6 * escala_dibujo), boxDerY1 + (132 * escala_dibujo), color_dos);
 
-        // 2. Buscar dinámicamente el récord histórico
-        int max_historico = buscar_record_por_nombre(juego->nombre_jugador);
+        // 2. Mostrar el Récord Máximo Global (Récord absoluto del archivo o primer usuario)
+        dibujar_texto("MAX SCORE", boxDerX1 + (6 * escala_dibujo), boxDerY1 + (146 * escala_dibujo), color_uno);
+        dibujar_numero_ceros7(max_score, boxDerX1 + (6 * escala_dibujo), boxDerY1 + (154 * escala_dibujo), color_dos);
 
-        // Si es un jugador nuevo o supera su marca previa, el récord se actualiza en vivo mientras gana puntos
-        if (juego->puntaje > max_historico) {
-            max_historico = juego->puntaje;
+        // 3. Mostrar el nombre de quién posee ese récord máximo abajo del puntaje
+        if (strlen(mejor_jugador) > 0) {
+            dibujar_texto(mejor_jugador, boxDerX1 + (6 * escala_dibujo), boxDerY1 + (164 * escala_dibujo), color_dos);
         }
-
-        // 3. Mostrar el Récord Máximo asociado
-        dibujar_texto("MAX SCORE", boxDerX1 + (6 * escala_dibujo), boxDerY1 + (156 * escala_dibujo), color_uno);
-        dibujar_numero_ceros7(max_historico, boxDerX1 + (6 * escala_dibujo), boxDerY1 + (166 * escala_dibujo), color_dos);
     } else {
         // Jugador invitado genérico sin estadísticas complejas
         dibujar_texto("GUEST", boxDerX1 + (6 * escala_dibujo), boxDerY1 + (140 * escala_dibujo), color_dos);

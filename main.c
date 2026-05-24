@@ -36,6 +36,9 @@ t_tetris juego;
 tGBT_Temporizador* timer;
 tGBT_Temporizador* timer_visual;
 int opcion_menu = 0;
+//Variables globales para rastrear el record historico
+char mejor_jugador_global[13] = "";
+int max_score_global = 0;
 
 int leerArgumentos(int argc, char* argv[], int* ancho, int* alto, int* escala_ventana);
 
@@ -72,6 +75,25 @@ void cargar_config() {
         config.escala = 2;
         config.velocidad = 0.5f;
     }
+}
+
+// Carga el puntaje más alto registrado en el archivo binario
+void cargar_record_absoluto() {
+    FILE* f = fopen(ARCHIVO_SCORE, "rb");
+    max_score_global = 0;
+    strcpy(mejor_jugador_global, "");
+
+    if (!f) return; // Si el archivo no existe, queda vacío
+
+    t_score_historico registro;
+    while (fread(&registro, sizeof(t_score_historico), 1, f) == 1) {
+        if (registro.puntaje >= max_score_global) {
+            max_score_global = registro.puntaje;
+            strncpy(mejor_jugador_global, registro.nombre, 12);
+            mejor_jugador_global[12] = '\0';
+        }
+    }
+    fclose(f);
 }
 
 int main(int argc, char* argv[]) {
@@ -169,6 +191,13 @@ int main(int argc, char* argv[]) {
                     juego.nombre_jugador[juego.nombre_len] = '\0';
                 }
                 if (tecla == GBTK_ENTER && juego.nombre_len > 0) {
+                    cargar_record_absoluto();
+
+                    // Si el archivo está vacío o no existe, el primer usuario toma el trono con 0 pts
+                    if (max_score_global == 0 || strlen(mejor_jugador_global) == 0) {
+                        strcpy(mejor_jugador_global, juego.nombre_jugador);
+                        max_score_global = 0;
+                    }
                     juego.estado = ESTADO_MENU;
                 }
             } else {
@@ -250,6 +279,12 @@ int main(int argc, char* argv[]) {
                                 // Lógica del motor de gravedad y el sistema Lock Delay
                                 tetris_procesar_gravedad(&juego, timer);
 
+                                // Copia en tiempo real si el jugador actual iguala o supera el récord histórico
+                                if (juego.puntaje >= max_score_global) {
+                                    max_score_global = juego.puntaje;
+                                    strcpy(mejor_jugador_global, juego.nombre_jugador);
+                                }
+
                                 if (juego.nivel != nivel_previo) {
                                     if (timer) {
                                         gbt_temporizador_destruir(timer);
@@ -270,7 +305,7 @@ int main(int argc, char* argv[]) {
         // Renderizado del estado actual
         int ancho_logico, alto_logico;
         obtener_resolucion_logica(config.resolucion, &ancho_logico, &alto_logico);
-        render_pantalla(&juego, &config, opcion_menu, &alf, ancho_logico, alto_logico);
+        render_pantalla(&juego, &config, opcion_menu, &alf, ancho_logico, alto_logico, mejor_jugador_global, max_score_global);
 
         gbt_volcar_backbuffer();
         gbt_esperar(16);
