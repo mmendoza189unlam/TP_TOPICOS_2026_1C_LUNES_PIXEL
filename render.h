@@ -21,6 +21,6 @@ void recrear_ventana(Configuracion* config);
 void aplicar_paleta(int tipo_paleta);
 
 // Renderiza el estado actual del juego en el backbuffer.
-void render_pantalla(t_tetris* juego, Configuracion* config, int opcion_menu, const Alfabeto* alf, int ancho_logico, int alto_logico);
+void render_pantalla(t_tetris* juego, Configuracion* config, int opcion_menu, const Alfabeto* alf, int ancho_logico, int alto_logicoconst, const char* mejor_jugador, int max_score);
 
 #endif // RENDER_H_INCLUDED
