@@ -124,6 +124,7 @@ void render_pantalla(t_tetris* juego, Configuracion* config, int opcion_menu, co
 
     int color_uno;
     int color_dos;
+    int color_fondo_gameover;
 
     if(config->paleta==1){
         //MODO VGA
@@ -133,6 +134,13 @@ void render_pantalla(t_tetris* juego, Configuracion* config, int opcion_menu, co
         //MODO RGB
         color_uno=VE;
         color_dos=AM;
+    }
+
+    // MANEJO EXCLUSIVO DEL COLOR DE FONDO EN GAMEOVER
+    if (config->resolucion == RES_VGA) {
+        color_fondo_gameover = VI;
+    } else {
+        color_fondo_gameover = RO;
     }
 
     int viejo_offsetX = offsetX;
@@ -383,34 +391,41 @@ void render_pantalla(t_tetris* juego, Configuracion* config, int opcion_menu, co
     if (juego->estado == ESTADO_PAUSA) {
         dibujar_texto("PAUSA", tableroPxX1 + (24 * escala_dibujo), tableroPxY1 + (60 * escala_dibujo), color_dos);
     }
-
     if (juego->estado == ESTADO_GAMEOVER) {
-        // Cuadro de fondo para el cartel de Game Over encima del tablero
-        for (int y = tableroPxY1 + (30 * escala_dibujo); y < tableroPxY1 + (95 * escala_dibujo); y++) {
-            for (int x = tableroPxX1 + (2 * escala_dibujo); x < tableroPxX2 - (2 * escala_dibujo); x++) {
-                gbt_dibujar_pixel(x, y, 5); // Fondo rojo sutil
-            }
-        }
         const char* txt_game_over = "GAME OVER";
         const char* txt_reiniciar = "REINICIAR ENTER";
         const char* txt_salir     = "SALIR ESC";
 
-        //Cálculo del centro del tablero en el eje X
+        // Cálculo del centro del tablero en el eje X
         int centro_tablero_x = tableroPxX1 + (tableroAnchoPx / 2);
-        //Cada letra/espacio en dibujar_texto desplaza exactamente: 4 * escala_dibujo píxeles
+        // Cada letra/espacio en dibujar_texto desplaza exactamente: 4 * escala_dibujo píxeles
         int ancho_letca_px = 4 * escala_dibujo;
 
-        // Calcular posición X para centrar "GAME OVER"
+        // Centrado de los tres textos en X
         int x_game_over = centro_tablero_x - ((strlen(txt_game_over) * ancho_letca_px) / 2);
-        dibujar_texto(txt_game_over, x_game_over, tableroPxY1 + (40 * escala_dibujo), color_dos);
-
-        // Calcular posición X para centrar "REINICIAR ENTER"
         int x_reiniciar = centro_tablero_x - ((strlen(txt_reiniciar) * ancho_letca_px) / 2);
-        dibujar_texto(txt_reiniciar, x_reiniciar, tableroPxY1 + (60 * escala_dibujo), color_uno);
+        int x_salir     = centro_tablero_x - ((strlen(txt_salir) * ancho_letca_px) / 2);
 
-        // Calcular posición X para centrar "SALIR ESC"
-        int x_salir = centro_tablero_x - ((strlen(txt_salir) * ancho_letca_px) / 2);
-        dibujar_texto(txt_salir, x_salir, tableroPxY1 + (76 * escala_dibujo), color_uno);
+        // Escalado y distribución consecutiva en Y para que se vean perfectos en VGA
+        int y_game_over = tableroPxY1 + (35 * escala_dibujo);
+        int y_reiniciar = y_game_over  + (15 * escala_dibujo);
+        int y_salir     = y_reiniciar  + (12 * escala_dibujo);
+
+        // Límites dinámicos de renderizado del fondo
+        int margen_superior = 8 * escala_dibujo;
+        int margen_inferior = 12 * escala_dibujo;
+
+        // UNICO DIBUJADO del rectángulo contenedor
+        // Usa la variable color_fondo_gameover determinada al inicio de la función
+        for (int y = y_game_over - margen_superior; y < y_salir + margen_inferior; y++) {
+            for (int x = tableroPxX1 + (2 * escala_dibujo); x < tableroPxX2 - (2 * escala_dibujo); x++) {
+                gbt_dibujar_pixel(x, y, color_fondo_gameover);
+            }
+        }
+
+        // Impresión de las letras por sobre el fondo modificado
+        dibujar_texto(txt_game_over, x_game_over, y_game_over, color_dos);
+        dibujar_texto(txt_reiniciar, x_reiniciar, y_reiniciar, color_dos);
+        dibujar_texto(txt_salir,x_salir,y_salir, color_dos);
     }
-
 }
