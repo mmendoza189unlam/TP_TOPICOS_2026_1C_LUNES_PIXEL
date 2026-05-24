@@ -45,7 +45,7 @@ typedef struct {
 
 // Estructura principal que mantiene el estado completo del juego
 typedef struct {
-    uint8_t* tablero[ALTO_TABLERO];
+    uint8_t* tablero[ALTO_TABLERO];               // Estado actual de la cuadrícula
     uint8_t piezas[CANT_PIEZAS][4][4];            // Representación de las piezas
 
     int estado;                                   // Estado actual de la máquina
@@ -85,7 +85,7 @@ typedef struct {
 
 
 // Inicializa el tablero, el puntaje y las variables de juego
-void tetris_reiniciar(t_tetris* j);
+void tetris_reiniciar(t_tetris* j, const Configuracion* config);
 
 // Prepara una nueva pieza para entrar en juego
 void tetris_nueva(t_tetris* j);

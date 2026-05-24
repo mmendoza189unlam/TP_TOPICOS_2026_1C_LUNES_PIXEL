@@ -100,18 +100,18 @@ static void limpiar(t_tetris* j) {
             }
         }
         if (llena) {
-            // Guardamos la dirección de memoria de la fila que se completó
+            // Guarda la dirección de memoria de la fila que se completó
             uint8_t* fila_temporal = j->tablero[y];
 
-            // Desplazamos únicamente los PUNTEROS de las filas superiores hacia abajo
+            // Desplaza únicamente los PUNTEROS de las filas superiores hacia abajo
             for (int yy = y; yy > 0; yy--) {
                 j->tablero[yy] = j->tablero[yy - 1];
             }
 
-            // El puntero de la fila eliminada se convierte ahora en la nueva fila superior (fila 0)
+            // El puntero de la fila eliminada se convierte en la nueva fila superior (fila 0)
             j->tablero[0] = fila_temporal;
 
-            // Limpiamos los elementos de esta nueva fila superior poniéndolos en 0
+            // Limpia los elementos de esta nueva fila superior poniéndolos en 0
             for (int x = 0; x < ANCHO_TABLERO; x++) {
                 j->tablero[0][x] = 0;
             }
@@ -130,9 +130,17 @@ static void limpiar(t_tetris* j) {
 //Actualiza el multiplicador de velocidad dinamico cada 10 piezas fijadas
 static void actualizar_dificultad(t_tetris* j) {
     j->contador_fichas++;
-    if (j->contador_fichas % 10 == 0) {
-        j->intervalo_actual *= 0.97f; // Acelera un 3% la caída
-        j->nivel=j->contador_fichas / 10;
+    // El nivel sube cada 10 líneas totales acumuladas
+    int nivel_calculado = j->lineas_totales / 10;
+    if (nivel_calculado != j->nivel) {
+        j->nivel = nivel_calculado;
+        // Reducimos el intervalo un 3% por cada nivel que suba
+        j->intervalo_actual *= 0.97f;
+
+        //PROTECCION CONTRA DESBORDE (para los casos donde se llegue a niveles muy altos)
+        if (j->intervalo_actual < 50.0f) {
+            j->intervalo_actual = 50.0f; // 50ms es la velocidad máxima absoluta
+        }
     }
 }
 
@@ -155,9 +163,9 @@ void tetris_nueva(t_tetris* j) {
 }
 
 // Inicializa el tablero y variables de estado para una nueva partida
-void tetris_reiniciar(t_tetris* j) {
+void tetris_reiniciar(t_tetris* j, const Configuracion* config) {
 
-    // Primero liberamos memoria si es que ya había sido asignada en una partida anterior
+    // Primero libera memoria si es que ya había sido asignada en una partida anterior
     for (int y = 0; y < ALTO_TABLERO; y++) {
         if (j->tablero[y] != NULL) {
             free(j->tablero[y]);
@@ -180,7 +188,7 @@ void tetris_reiniciar(t_tetris* j) {
     j->lineas_totales = 0;
     j->contador_fichas = 0;
     j->nivel=0;
-    j->intervalo_actual = 1000.0f; // Reset de milisegundos base
+    j->intervalo_actual = config->velocidad * 1000.0f; // Sincroniza la lógica base con el menú
     j->game_over = 0;
     j->estado = ESTADO_JUGANDO;
 
@@ -275,7 +283,7 @@ void tetris_hard_drop(t_tetris* j) {
 }
 //Avance de las piezas por gravedad
 void tetris_procesar_gravedad(t_tetris* j, tGBT_Temporizador* timer_caida) {
-    // 1. Procesar caída automática del temporizador global
+    // 1. Procesa la caída automática del temporizador global
     if (gbt_temporizador_consumir(timer_caida)) {
         if (!colisiona(j, j->piezas[j->pieza_actual], j->posX, j->posY + 1)) {
             j->posY++;
@@ -289,14 +297,14 @@ void tetris_procesar_gravedad(t_tetris* j, tGBT_Temporizador* timer_caida) {
         }
     }
 
-    // 2. Comprobar si el tiempo de gracia del Lock Delay se agotó
+    // 2. Comprueba si el tiempo de gracia del Lock Delay se agotó
     if (j->en_espera_fijacion && j->timer_fijacion != NULL) {
         if (gbt_temporizador_consumir(j->timer_fijacion)) {
             fijar(j);
             limpiar(j);
             actualizar_dificultad(j);
 
-            // Apagar timer de gracia actual
+            // Apaga el timer de gracia actual
             j->en_espera_fijacion = 0;
             gbt_temporizador_destruir(j->timer_fijacion);
             j->timer_fijacion = NULL;

@@ -102,7 +102,7 @@ int main(int argc, char* argv[]) {
     alfabetoCrear(&alf);
 
     // Configuración del estado inicial del juego
-    memset(&juego, 0, sizeof(t_tetris));
+    memset(&juego, 0, sizeof(t_tetris)); //el memset garantiza q j.tablero [*] arranque en NULL de forma segura
     juego.mostrar_press = 1;
     juego.mostrar_cursor = 1;
     juego.estado = ESTADO_PRESENTACION;
@@ -127,7 +127,7 @@ int main(int argc, char* argv[]) {
         if (juego.estado == ESTADO_JUGANDO || juego.estado == ESTADO_PAUSA || juego.estado == ESTADO_GAMEOVER) {
             // Si aprieta N, inicia un NUEVO JUEGO directamente
             if (tecla == GBTK_n) {
-                tetris_reiniciar(&juego);
+                tetris_reiniciar(&juego, &config);
                 gbt_temporizador_destruir(timer);
                 timer = gbt_temporizador_crear(config.velocidad);
                 juego.estado = ESTADO_JUGANDO;
@@ -181,12 +181,17 @@ int main(int argc, char* argv[]) {
                             case 0: config.paleta = !config.paleta; aplicar_paleta(config.paleta); break;
                             case 1: config.resolucion = (config.resolucion == RES_CGA) ? RES_VGA : RES_CGA; recrear_ventana(&config); break;
                             case 2: config.escala = (config.escala == 1) ? 2 : 1; recrear_ventana(&config); break;
-                            case 3: config.velocidad = (config.velocidad == 1.0f) ? 0.5f : (config.velocidad == 0.5f) ? 0.2f : 1.0f; timer = gbt_temporizador_crear(config.velocidad); break;
+                            case 3:
+                                // Cambia cíclicamente: 1.0f (Lento) -> 0.5f (Normal) -> 0.2f (Rápido)
+                                if (config.velocidad == 1.0f) config.velocidad = 0.5f;
+                                else if (config.velocidad == 0.5f) config.velocidad = 0.2f;
+                                else config.velocidad = 1.0f;
+                                break;
                         }
                         guardar_config();
                     }
                     if (gbt_tecla_presionada(GBTK_ENTER) && opcion_menu == 4) {
-                        tetris_reiniciar(&juego);
+                        tetris_reiniciar(&juego, &config);
                         // Modifica el temporizador base respetando la velocidad elegida en el menú de opciones
                         gbt_temporizador_destruir(timer);
                         timer = gbt_temporizador_crear(config.velocidad);
@@ -200,7 +205,7 @@ int main(int argc, char* argv[]) {
                     } else {
                         if (juego.estado == ESTADO_GAMEOVER) {
                             if (gbt_tecla_presionada(GBTK_ENTER)) {
-                                tetris_reiniciar(&juego);
+                                tetris_reiniciar(&juego, &config);
 
                                 gbt_temporizador_destruir(timer);
                                 timer = gbt_temporizador_crear(config.velocidad);
@@ -231,13 +236,13 @@ int main(int argc, char* argv[]) {
                                 tetris_procesar_gravedad(&juego, timer);
 
                                 if (juego.nivel != nivel_previo) {
-                                    float multiplicador_velocidad = juego.intervalo_actual / 1000.0f;
-
                                     if (timer) {
                                         gbt_temporizador_destruir(timer);
                                     }
+                                    //Convierte el intervalo actual de la logica (milisegundos) a segundos directos
+                                    float nueva_velocidad_segundos = juego.intervalo_actual / 1000.0f;
                                     // Se crea el nuevo timer con la velocidad acelerada del nuevo nivel
-                                    timer = gbt_temporizador_crear(config.velocidad * multiplicador_velocidad);
+                                    timer = gbt_temporizador_crear(nueva_velocidad_segundos);
                                 }
 
                             }
