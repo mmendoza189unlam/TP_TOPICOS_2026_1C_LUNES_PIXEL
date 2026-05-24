@@ -90,13 +90,23 @@ void recrear_ventana(Configuracion* config) {
     // Centrado matemático perfecto basado en las dimensiones reales ocupadas
     offsetX = (ancho_logico - ancho_total_real) / 2 + (76 * escala_dibujo);
     // Sumamos (76 * escala_dibujo) porque el render_pantalla toma a 'offsetX' como la coordenada X del TABLERO, no del borde izquierdo de la pantalla.
-
     offsetY = (alto_logico - alto_total_real) / 2;
+
+    // AJUSTE VISUAL
+    if (config->resolucion == RES_CGA && config->escala == 4) {
+        offsetY -= 6;
+    }
+    else if (config->resolucion == RES_VGA && config->escala == 2) {
+        offsetY -= 12;
+    }
+
+    if (offsetY < 4) {
+        offsetY = 4;
+    }
 
     gbt_destruir_ventana();
     gbt_crear_ventana("Tetris", ancho_logico, alto_logico, config->escala);
 }
-
 /* Dibuja un fondo con patrón de colores */
 static void dibujarFondo(int ancho, int alto, int escala) {
     uint8_t colores[] = {9, 11, 12, 13, 14, 10};
