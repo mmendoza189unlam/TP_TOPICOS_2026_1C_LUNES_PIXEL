@@ -18,6 +18,7 @@
 #define CANT_PIEZAS 7
 #define ARCHIVO_CONFIG "config.dat"
 #define TIEMPO_GRACIA 0.5f // Tiempo de gracia del Lock Delay en segundos
+#define ARCHIVO_SCORE "scores.dat"
 
 // Estados posibles de la máquina de estados global
 enum {
@@ -42,6 +43,13 @@ typedef struct {
     int escala;
     float velocidad;
 } Configuracion;
+
+//Estructura para almacenar los puntajes mas altos
+typedef struct {
+    char nombre[13];
+    int puntaje;
+} t_score_historico;
+
 
 // Estructura principal que mantiene el estado completo del juego
 typedef struct {
@@ -102,5 +110,9 @@ void tetris_hard_drop(t_tetris* j);
 
 // Ejecuta un ciclo de gravedad automática y manejo del Lock Delay
 void tetris_procesar_gravedad(t_tetris* j, tGBT_Temporizador* timer_caida);
+
+// Prototipos para la persistencia del Score Histórico
+int buscar_record_por_nombre(const char* nombre_buscado);
+void guardar_puntaje_jugador(const char* nombre, int puntaje);
 
 #endif // TETRIS_H_INCLUDED

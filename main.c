@@ -127,7 +127,15 @@ int main(int argc, char* argv[]) {
         if (juego.estado == ESTADO_JUGANDO || juego.estado == ESTADO_PAUSA || juego.estado == ESTADO_GAMEOVER) {
             // Si aprieta N, inicia un NUEVO JUEGO directamente
             if (tecla == GBTK_n) {
+
+                char nombre_temporal[13];
+                strcpy(nombre_temporal, juego.nombre_jugador); // Resguardamos el nombre
+
                 tetris_reiniciar(&juego, &config);
+
+                strcpy(juego.nombre_jugador, nombre_temporal); // Lo restauramos
+                juego.nombre_len = strlen(juego.nombre_jugador);
+
                 gbt_temporizador_destruir(timer);
                 timer = gbt_temporizador_crear(config.velocidad);
                 juego.estado = ESTADO_JUGANDO;
@@ -205,7 +213,14 @@ int main(int argc, char* argv[]) {
                     } else {
                         if (juego.estado == ESTADO_GAMEOVER) {
                             if (gbt_tecla_presionada(GBTK_ENTER)) {
+
+                                char nombre_temporal[13];
+                                strcpy(nombre_temporal, juego.nombre_jugador); // Resguardamos el nombre
+
                                 tetris_reiniciar(&juego, &config);
+
+                                strcpy(juego.nombre_jugador, nombre_temporal); // Lo restauramos
+                                juego.nombre_len = strlen(juego.nombre_jugador);
 
                                 gbt_temporizador_destruir(timer);
                                 timer = gbt_temporizador_crear(config.velocidad);

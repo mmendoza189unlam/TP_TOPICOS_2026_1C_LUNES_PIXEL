@@ -7,6 +7,7 @@
 #include "tetris.h"
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 // Definición de las formas base de cada pieza (tetrominós)
 static const uint8_t piezas_orig[CANT_PIEZAS][4][4] = {
@@ -158,7 +159,9 @@ void tetris_nueva(t_tetris* j) {
 
     // Si al nacer ya colisiona, Game Over directo sin colgar el bucle
     if (colisiona(j, j->piezas[j->pieza_actual], j->posX, j->posY)) {
+        j->game_over = 1;
         j->estado = ESTADO_GAMEOVER;
+        guardar_puntaje_jugador(j->nombre_jugador, j->puntaje); //Guarda automáticamente en el archivo binario
     }
 }
 
@@ -313,5 +316,44 @@ void tetris_procesar_gravedad(t_tetris* j, tGBT_Temporizador* timer_caida) {
         }
     }
 
+}
+
+// Busca el puntaje máximo alcanzado por un jugador específico
+int buscar_record_por_nombre(const char* nombre_buscado) {
+    FILE* f = fopen("scores.dat", "rb");
+    if (!f) return 0; // Si el archivo no existe aún, el récord es 0
+
+    t_score_historico registro;
+    int max_puntaje = 0;
+    int encontrado = 0;
+
+    while (fread(&registro, sizeof(t_score_historico), 1, f) == 1) {
+        // Compara los nombres sin distinguir mayúsculas de minúsculas
+        if (strcmpi(registro.nombre, nombre_buscado) == 0) {
+            if (registro.puntaje > max_puntaje) {
+                max_puntaje = registro.puntaje;
+            }
+            encontrado = 1;
+        }
+    }
+    fclose(f);
+
+    return encontrado ? max_puntaje : 0;
+}
+
+// Guarda el puntaje final obtenido en el archivo binario
+void guardar_puntaje_jugador(const char* nombre, int puntaje) {
+    if (!nombre || strlen(nombre) == 0 || puntaje <= 0) return;
+
+    FILE* f = fopen("scores.dat", "ab"); // 'ab' para añadir registros al final
+    if (f) {
+        t_score_historico registro;
+        strncpy(registro.nombre, nombre, 12);
+        registro.nombre[12] = '\0';
+        registro.puntaje = puntaje;
+
+        fwrite(&registro, sizeof(t_score_historico), 1, f);
+        fclose(f);
+    }
 }
 

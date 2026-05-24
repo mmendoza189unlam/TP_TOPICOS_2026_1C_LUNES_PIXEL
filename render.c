@@ -317,7 +317,7 @@ void render_pantalla(t_tetris* juego, Configuracion* config, int opcion_menu, co
     }
 
 
-    // --- PANEL DERECHO: SCORE, NEXT, LEVEL ---
+    // --- PANEL DERECHO: SCORE, NEXT, LEVEL, USERNAME, MAX SCORE ---
     int boxDerX1 = boxCentroX2 + (4 * escala_dibujo);
     int boxDerY1 = offsetY;
     int boxDerX2 = boxDerX1 + (72 * escala_dibujo);
@@ -338,9 +338,9 @@ void render_pantalla(t_tetris* juego, Configuracion* config, int opcion_menu, co
     dibujar_numero_ceros7(juego->puntaje, boxDerX1 + (6 * escala_dibujo), boxDerY1 + (16 * escala_dibujo), color_dos);
 
     // Bloque NEXT PIECE
-    dibujar_texto("NEXT", boxDerX1 + (6 * escala_dibujo), boxDerY1 + (46 * escala_dibujo), color_dos);
+    dibujar_texto("NEXT", boxDerX1 + (6 * escala_dibujo), boxDerY1 + (42 * escala_dibujo), color_dos);
     int previewX = boxDerX1 + (16 * escala_dibujo);
-    int previewY = boxDerY1 + (58 * escala_dibujo);
+    int previewY = boxDerY1 + (52 * escala_dibujo);
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
             if (piezas_orig[juego->siguiente][i][j]) {
@@ -354,12 +354,29 @@ void render_pantalla(t_tetris* juego, Configuracion* config, int opcion_menu, co
     }
 
     // Bloque LEVEL
-    dibujar_texto("LEVEL", boxDerX1 + (6 * escala_dibujo), boxDerY1 + (120 * escala_dibujo), color_uno);
-    dibujar_numero_ceros7(juego->nivel, boxDerX1 + (6 * escala_dibujo), boxDerY1 + (130 * escala_dibujo), color_uno);
+    dibujar_texto("LEVEL", boxDerX1 + (6 * escala_dibujo), boxDerY1 + (96 * escala_dibujo), color_uno);
+    dibujar_numero_ceros7(juego->nivel, boxDerX1 + (6 * escala_dibujo), boxDerY1 + (106 * escala_dibujo), color_uno);
 
-    //USER NAME
+    // --- ESTADÍSTICA DE JUEGO POR PREFERENCIA DE NOMBRE ---
     if (juego->nombre_len > 0) {
-        dibujar_texto(juego->nombre_jugador, boxDerX1 + (6 * escala_dibujo), boxDerY1 + (160 * escala_dibujo), color_dos);
+        // 1. Mostrar el Nombre del Jugador Actual
+        dibujar_texto("PLAYER", boxDerX1 + (6 * escala_dibujo), boxDerY1 + (130 * escala_dibujo), color_uno);
+        dibujar_texto(juego->nombre_jugador, boxDerX1 + (6 * escala_dibujo), boxDerY1 + (140 * escala_dibujo), color_dos);
+
+        // 2. Buscar dinámicamente el récord histórico
+        int max_historico = buscar_record_por_nombre(juego->nombre_jugador);
+
+        // Si es un jugador nuevo o supera su marca previa, el récord se actualiza en vivo mientras gana puntos
+        if (juego->puntaje > max_historico) {
+            max_historico = juego->puntaje;
+        }
+
+        // 3. Mostrar el Récord Máximo asociado
+        dibujar_texto("MAX SCORE", boxDerX1 + (6 * escala_dibujo), boxDerY1 + (156 * escala_dibujo), color_uno);
+        dibujar_numero_ceros7(max_historico, boxDerX1 + (6 * escala_dibujo), boxDerY1 + (166 * escala_dibujo), color_dos);
+    } else {
+        // Jugador invitado genérico sin estadísticas complejas
+        dibujar_texto("GUEST", boxDerX1 + (6 * escala_dibujo), boxDerY1 + (140 * escala_dibujo), color_dos);
     }
 
     //OVERLAYS DE ESTADOS INTERNOS (PAUSA Y GAMEOVER)
